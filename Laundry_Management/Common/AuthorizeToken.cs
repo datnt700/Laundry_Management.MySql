@@ -8,6 +8,7 @@ namespace Laundry_Management.Common
 
         public string GenerateToken()
         {
+            //JsonConvert.SerializeObject: convert object into Json
             return Encrypt.EncodeAccount(JsonConvert.SerializeObject(new AuthorizeToken
             {
                 Phone = Phone,

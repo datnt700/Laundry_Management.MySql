@@ -7,24 +7,7 @@ namespace Laundry_Management.Common
 {
     public static class Encrypt
     {
-        //private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        //{
-        //    using (var hmac = new HMACSHA512())
-        //    {
-        //        passwordSalt = hmac.Key;
-        //        passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-        //    }
-
-        //}
-        //private static bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
-        //{
-        //    using (var hmac = new HMACSHA512(passwordSalt))
-        //    {
-        //        var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-        //        return computedHash.SequenceEqual(passwordHash);
-        //    }
-        //}
-
+        
         public static string Base64Decode(string base64EncodedData)
         {
             var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
@@ -40,5 +23,14 @@ namespace Laundry_Management.Common
             return Convert.ToBase64String(Encoding.UTF8.GetBytes(txt));
             return txt;
         }
+
+        public static string hashPassword(string password)
+        {
+            var sha = SHA256.Create();
+            var asByArray = Encoding.Default.GetBytes(password);
+            var hashPassword = sha.ComputeHash(asByArray);
+            return Convert.ToBase64String(hashPassword);
+        }
+
     }
 }

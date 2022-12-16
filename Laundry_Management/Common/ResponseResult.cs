@@ -6,6 +6,7 @@ namespace Laundry_Management.Common
     {
         public int StatusCode { get; set; }
         public dynamic Data { get; set; }
+        public string User { get; set; }
         public string Message { get; set; }
 
         public ResponseResult ResponseSuccess(dynamic data = null,string msg = "")

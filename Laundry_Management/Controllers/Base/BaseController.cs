@@ -1,7 +1,9 @@
 ﻿using Laundry_Management.Common;
+using Laundry_Management.Data;
 using Laundry_Management.DTO;
 using Laundry_Management.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using System.Collections.Immutable;
@@ -12,35 +14,38 @@ namespace Laundry_Management.Controllers.Base
     {
         private readonly IHttpContextAccessor _request;
 
-        public BaseController(IHttpContextAccessor _request)
+        public BaseController( IHttpContextAccessor request)
         {
-            this._request = _request;
+            
+            _request = request;
         }
         //verify Token
-        public bool CheckAuthen(out int userId)
+        // return userId
+        public User CheckAuthen()
         {
-            userId = 0;
-            
+
+            //HTTP request to provide information about the request
             string token = _request.HttpContext.Request.Headers["Authorization"];
 
             if (string.IsNullOrWhiteSpace(token))
             {
-                return false;
+                return null;
             }
 
             var decode = Encrypt.Base64Decode(token);
 
             AuthorizeToken auth = JsonConvert.DeserializeObject<AuthorizeToken>(decode);
+            var current_time = DateTime.UtcNow;
+            var user = new User();
+            user.PhoneNumber = auth.Phone;
+            user.CreateDate = current_time;
+            if (current_time > auth.ExpireDate)
+            {
+                return null;
+            }
 
-
-            //userId = token.
-
-            // nếu k tồn tại hoặc token = null => lỗi
-            // có tồn tại giải mã token => phone + hết hạn
-            //check xem token hết hạn chưa
-            // lấy người dùng bằng sô didenj thoại
-            //userId = user.userId
-            return true;
+            
+            return user;
         }
     }
 }

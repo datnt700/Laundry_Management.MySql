@@ -1,6 +1,8 @@
 ﻿using Laundry_Management.Common;
 using Laundry_Management.Controllers.Base;
 using Laundry_Management.Data;
+using Laundry_Management.DTO.Request;
+using Laundry_Management.DTO;
 using Laundry_Management.Models;
 using Laundry_Management.Procedures;
 using Laundry_Management.Services;
@@ -17,13 +19,26 @@ namespace Laundry_Management.Controllers
         private readonly LaundryContext _context;
         private readonly LaundryContextProcedures _contextProcedures;
         private readonly IMachine _machineService;
+        private readonly IHttpContextAccessor _request;
+
         public MachineController(LaundryContext context, LaundryContextProcedures contextProcedures,IMachine machine, IHttpContextAccessor request) : base(request)
         {
             _context = context;
             _contextProcedures = contextProcedures;
             _machineService = machine;
+            _request = request;
         }
 
+        [HttpGet("GetByFilter")]
+        public async Task<Paginate> GetByFilter([FromQuery] FitlerUserModel model)
+        {
+            var validFilter = new FitlerUserModel(model.PageIndex, model.PageSize);
+
+            var queryUser = _context.Machines.AsQueryable();
+
+            var lsMachine = queryUser.Skip((validFilter.PageIndex - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList();
+            return new Paginate(lsMachine, validFilter.PageIndex, validFilter.PageSize);
+        }
 
 
         [HttpGet]
@@ -42,79 +57,111 @@ namespace Laundry_Management.Controllers
 
         [HttpGet]
         [Route("GetById")]
-        public async Task<ResponseResult> GetById(int machineId)
+        public async Task<ResponseResult> GetById(int machineId, int userId)
         {
-            var check = base.CheckAuthen(out int userId);
-
+            var check = CheckAuthen();
+            if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
             var machine = await _machineService.GetById(machineId,userId);
             if (machine == null) return new ResponseResult().ResponsFailure(null, "");
             return new ResponseResult().ResponseSuccess(machine);
         }
 
         [HttpGet]
-        public async Task<ActionResult<Machine>> Get()
+        public async Task<ResponseResult> Get()
         {
-            var machines = await _context.Machines.FromSqlRaw("Select * from Machine").ToListAsync();
-            return Ok(machines);
+            var check = CheckAuthen();
+            if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
+            var machine = await _context.Machines.FromSqlRaw("Select * from Machine").ToListAsync();
+            if (machine == null) return new ResponseResult().ResponsFailure(null, "");
+            return new ResponseResult().ResponseSuccess(machine);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Machine>> GetMachineById(int id)
-        {
-            var machine = await _contextProcedures.sp_GetMachineById.FromSqlRaw("CALL sp_GetMachineById({0})", id).ToListAsync();
-            return Ok(machine);
-        }
+        //[HttpGet("{id}")]
+        //public async Task<ResponseResult> GetMachineById(int id)
+        //{
+        //    var machine = await _contextProcedures.sp_GetMachineById.FromSqlRaw("CALL sp_GetMachineById({0})", id).ToListAsync();
+        //    if (machine == null) return new ResponseResult().ResponsFailure(null, "");
+        //    return new ResponseResult().ResponseSuccess(machine);
+        //}
 
         [HttpPost]
-        public async Task<ActionResult<Machine>> PostMachine(Machine machine)
+        public async Task<ResponseResult> Add(MachineDTO dto)
         {
+            var check = CheckAuthen();
+            if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
+            if (String.IsNullOrEmpty(dto.MachineName))
+            {
+                return new ResponseResult().ResponsFailure(null, "");
+            }
+
+            Machine machine = new Machine()
+            {
+                MachineName= dto.MachineName,
+                MachineType = dto.MachineType,
+                Branch = dto.Branch,
+                Size= dto.Size,
+            };
+            if (machine == null) return new ResponseResult().ResponsFailure(null, "");
             _context.Machines.Add(machine);
             await _context.SaveChangesAsync();
 
-            return Ok(await _context.Machines.ToListAsync());
+            return new ResponseResult().ResponseSuccess(machine);
 
         }
 
-        [HttpPut]
-        public async Task<ActionResult<Machine>> UpdateMachine(Machine machine)
+        [HttpPut("{id}")]
+        public async Task<ResponseResult> UpdateMachine(int id, MachineDTO dto)
         {
-            var dbmachine = await _context.Machines.FindAsync(machine.MachineId);
+            var check = CheckAuthen();
+            if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
+            if (String.IsNullOrEmpty(dto.MachineName))
+            {
+                return new ResponseResult().ResponsFailure(null, "");
+            }
+            var dbmachine = _context.Machines.Where(m => m.MachineId == id).SingleOrDefault();
             if (dbmachine == null)
-                return BadRequest("Machine not found");
-            dbmachine.MachineId = machine.MachineId;
-            dbmachine.MachineName = machine.MachineName;
-            dbmachine.MachineType= machine.MachineType;
-            dbmachine.Branch = machine.Branch;
-            dbmachine.Size = machine.Size;
-            dbmachine.Location = machine.Location;
-            dbmachine.MachineHistories = machine.MachineHistories;
-            dbmachine.LocationId = machine.LocationId;
-            dbmachine.MachineModes = machine.MachineModes;
-            dbmachine.IsActive = machine.IsActive;
-            dbmachine.Status = machine.Status;
+                return new ResponseResult().ResponsFailure(null, "");
+          
+            dbmachine.MachineName = dto.MachineName;
+            dbmachine.MachineType= dto.MachineType;
+            dbmachine.Branch = dto.Branch;
+            dbmachine.Size = dto.Size;
+            
             
             await _context.SaveChangesAsync();
-            return Ok(dbmachine);
+            return new ResponseResult().ResponseSuccess(dbmachine);
         }
 
-        [HttpGet("{MachineId}/{MachineName}")]
-        public async Task<IEnumerable<sp_UpdateMachine>> UpdateMachineName(Machine machine)
-        {
-            var result = await _contextProcedures.sp_UpdateMachine.FromSqlRaw(" call sp_UpdateMachine ({0}), ({1})", machine.MachineId, machine.MachineName).ToListAsync();
-            return result;
-        }
+        //[HttpGet("{MachineId}/{MachineName}")]
+        //public async Task<IEnumerable<sp_UpdateMachine>> UpdateMachineName(Machine machine)
+        //{
+        //    var result = await _contextProcedures.sp_UpdateMachine.FromSqlRaw(" call sp_UpdateMachine ({0}), ({1})", machine.MachineId, machine.MachineName).ToListAsync();
+        //    return result;
+        //}
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Machine>> DeleteMachine(int id)
+        public async Task<ResponseResult> DeleteMachine(int id)
         {
+            var check = CheckAuthen();
+            if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
             var machine = await _context.Machines.FindAsync(id);
             if (machine == null)
-                return BadRequest("Machine not found");
+                return new ResponseResult().ResponsFailure(null, "");
             _context.Machines.Remove(machine);
             await _context.SaveChangesAsync();
 
-            return Ok(await _context.Machines.ToListAsync());
+            return new ResponseResult().ResponseSuccess(machine);
 
+        }
+
+        [HttpGet("GetLocationFromMachineName")]
+        public async Task<Machine?> GetLocationFromMachineName(string? machineName)
+        {
+            var machine = await _context.Machines
+                .Include(l => l.Location)
+                .Where(l => l.MachineName == machineName)
+                .FirstOrDefaultAsync();
+            return machine;
         }
     }
 }

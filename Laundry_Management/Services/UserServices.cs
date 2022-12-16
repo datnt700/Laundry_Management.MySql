@@ -4,12 +4,14 @@ using Laundry_Management.DTO;
 using Laundry_Management.DTO.Request;
 using Laundry_Management.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace Laundry_Management.Services
 {
     public interface IUser
     {
         Task<UserDTO> Register(RegisterUser model);
+        Task<UserDTO> Login(LoginModel model);
     }
 
     public class UserServices : IUser
@@ -24,7 +26,7 @@ namespace Laundry_Management.Services
 
         public async Task<UserDTO> Register(RegisterUser model)
         {
-            var dbUser = _context.Users.Where(u => u.PhoneNumber  == model.Phone).FirstOrDefault();
+            var dbUser = _context.Users.FirstOrDefault(u => u.PhoneNumber == model.Phone);
             if (dbUser != null)
             {
                 return null;
@@ -36,52 +38,45 @@ namespace Laundry_Management.Services
 
             var passHash = Encrypt.EncodeAccount(model.Password + user.Salt);
             user.PassHash = passHash;
+            user.CreateDate = DateTime.Now;
+
             _context.Users.Add(user);
-            _context.SaveChanges();
+            var res = _context.SaveChanges();
+            if (res == 0) return null;
 
-            return new UserDTO();
-            // kiểm tra số diện thoại đã đc tạo chưa
-            //if (model.Phone == user.PhoneNumber) return null;
-            //var user = new User();
 
-            //user = new User
-            //{
-            //    PhoneNumber = model.Phone,
-            //    Salt = Guid.NewGuid().ToString()// trả về đối tượng string
-            //};
-
-            //var passHash = Encrypt.EncodeAccount(model.Password + user.Salt);
-            //user.PassHash = passHash;
-            //_context.Add(user);
-            //await _context.SaveChangesAsync();
-            //// insert database
-            //// return tài khoản đã được đăng kí
-            //return Ok(user);
+            return new UserDTO
+            {
+                Token = new AuthorizeToken
+                {
+                    Phone = model.Phone
+                }.GenerateToken()
+            };
         }
-
         public async Task<UserDTO> Login(LoginModel model)
         {
             //kiểm tra tài khoản có tồn tại không
-            var user = new User();
-            if (user == null) return null;
+
             // lấy tài khoản đấy ra
             //kiểm tra mật khẩu có đúng chưa
-
-            var passHash = Encrypt.EncodeAccount(model.Password + user.Salt);
-            if (passHash != user.PassHash) return null;
-
-            var token = new AuthorizeToken
+            var dbUser = _context.Users.FirstOrDefault(u => u.PhoneNumber == model.Phone);
+            if (dbUser == null)
             {
-                Phone = model.Phone
-            }.GenerateToken();
+                return null;
+            }
+            var passHash = Encrypt.EncodeAccount(model.Password + dbUser.Salt);
+            if (passHash != dbUser.PassHash) return null;
 
-            var userResp = new UserDTO
+            return new UserDTO
             {
-                Token = token
+                Token = new AuthorizeToken
+                {
+                    Phone = model.Phone
+                }.GenerateToken(),
+
             };
-            return userResp;
-
-
         }
+
+
     }
 }
