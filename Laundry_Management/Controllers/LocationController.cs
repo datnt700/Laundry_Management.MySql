@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Laundry_Management.Controllers.Base;
+using Laundry_Management.DTO;
 
 namespace Laundry_Management.Controllers
 {
@@ -45,34 +46,48 @@ namespace Laundry_Management.Controllers
         }
 
         [HttpPost]
-        public async Task<ResponseResult> Add(Location location)
+        public async Task<ResponseResult> Add(LocationDTO dto)
         {
             var check = CheckAuthen();
             if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
-            _context.Locations.Add(location);
+
+            if (String.IsNullOrEmpty(dto.LocationName))
+            {
+                return new ResponseResult().ResponsFailure(null, "");
+            }
+
+            Location location = new Location()
+            {
+                LocationName = dto.LocationName,
+                Coordinates = dto.Coordinates
+            };
+
             if (location == null) return new ResponseResult().ResponsFailure(null, "");
+            _context.Locations.Add(location);
             await _context.SaveChangesAsync();
             return new ResponseResult().ResponseSuccess(location);
         }
 
-        [HttpPut]
-        public async Task<ResponseResult> Update(Location location)
+        [HttpPut("{id}")]
+        public async Task<ResponseResult> Update( int id, LocationDTO dto)
         {
             var check = CheckAuthen();
             if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
-            var dbLocation = await _context.Locations.FindAsync(location.LocationId);
+            if (String.IsNullOrEmpty(dto.LocationName))
+            {
+                return new ResponseResult().ResponsFailure(null, "");
+            }
+
+            var dbLocation = _context.Locations.Where(l => l.LocationId == id).SingleOrDefault();
             if (dbLocation == null)
             {
                 return new ResponseResult().ResponsFailure(null, "");
             }
-            dbLocation.LocationId = location.LocationId;
-            dbLocation.LocationName = location.LocationName;
-            dbLocation.Coordinates= location.Coordinates;
-            dbLocation.IsActive= location.IsActive;
-            dbLocation.UserIdHost= location.UserIdHost;
+            dbLocation.LocationName = dto.LocationName;
+            dbLocation.Coordinates= dto.Coordinates;
 
             await _context.SaveChangesAsync();
-            return new ResponseResult().ResponseSuccess(location);
+            return new ResponseResult().ResponseSuccess(dbLocation);
         }
 
         [HttpDelete("{id}")]

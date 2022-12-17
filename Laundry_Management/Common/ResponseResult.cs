@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Laundry_Management.Controllers.Base;
+using System.Net;
 
 namespace Laundry_Management.Common
 {
@@ -15,6 +16,7 @@ namespace Laundry_Management.Common
             {
                 StatusCode = 200,
                 Data = data,
+                
                 Message = string.IsNullOrWhiteSpace(msg) ? "Thành công" : msg
             };
         }

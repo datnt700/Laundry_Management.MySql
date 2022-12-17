@@ -94,13 +94,14 @@ namespace Laundry_Management.Controllers
                 return new ResponseResult().ResponsFailure(null, "");
             }
 
-            Machine machine = new Machine()
-            {
-                MachineName= dto.MachineName,
-                MachineType = dto.MachineType,
-                Branch = dto.Branch,
-                Size= dto.Size,
-            };
+            Machine machine = new Machine();
+
+            machine.MachineName = dto.MachineName;
+            machine.MachineType = dto.MachineType;
+            machine.Branch = dto.Branch;
+            machine.Size = dto.Size;
+            machine.Location.LocationName = dto.LocationName;
+            
             if (machine == null) return new ResponseResult().ResponsFailure(null, "");
             _context.Machines.Add(machine);
             await _context.SaveChangesAsync();
@@ -126,6 +127,7 @@ namespace Laundry_Management.Controllers
             dbmachine.MachineType= dto.MachineType;
             dbmachine.Branch = dto.Branch;
             dbmachine.Size = dto.Size;
+            dbmachine.Location.LocationName = dto.LocationName;
             
             
             await _context.SaveChangesAsync();
