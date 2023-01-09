@@ -2,13 +2,15 @@
 using Laundry_Management.Controllers.Base;
 using Laundry_Management.Data;
 using Laundry_Management.DTO.Request;
-using Laundry_Management.DTO;
 using Laundry_Management.Models;
 using Laundry_Management.Procedures;
 using Laundry_Management.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Laundry_Management.DTO.MachineDTO;
+using static Laundry_Management.Models.Machine;
+using System.Text.Json.Serialization;
 
 namespace Laundry_Management.Controllers
 {
@@ -16,29 +18,31 @@ namespace Laundry_Management.Controllers
     [ApiController]
     public class MachineController : BaseController
     {
-        private readonly LaundryContext _context;
         private readonly LaundryContextProcedures _contextProcedures;
         private readonly IMachine _machineService;
         private readonly IHttpContextAccessor _request;
+        private readonly LaundryContext _context;
 
-        public MachineController(LaundryContext context, LaundryContextProcedures contextProcedures,IMachine machine, IHttpContextAccessor request) : base(request)
+        public MachineController(LaundryContextProcedures contextProcedures,IMachine machine, IHttpContextAccessor request, LaundryContext context) : base(request, context)
         {
-            _context = context;
+            _request = request;
             _contextProcedures = contextProcedures;
             _machineService = machine;
-            _request = request;
+            _context = context;
         }
 
-        [HttpGet("GetByFilter")]
-        public async Task<Paginate> GetByFilter([FromQuery] FitlerUserModel model)
-        {
-            var validFilter = new FitlerUserModel(model.PageIndex, model.PageSize);
+      
 
-            var queryUser = _context.Machines.AsQueryable();
+        //[HttpGet("GetByFilter")]
+        //public async Task<Paginate> GetByFilter([FromQuery] FitlerUserModel model)
+        //{
+        //    var validFilter = new FitlerUserModel(model.PageIndex, model.PageSize);
 
-            var lsMachine = queryUser.Skip((validFilter.PageIndex - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList();
-            return new Paginate(lsMachine, validFilter.PageIndex, validFilter.PageSize);
-        }
+        //    var queryUser = _context.Machines.AsQueryable();
+
+        //    var lsMachine = queryUser.Skip((validFilter.PageIndex - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList();
+        //    return new Paginate(lsMachine, validFilter.PageIndex, validFilter.PageSize);
+        //}
 
 
         [HttpGet]
@@ -67,10 +71,11 @@ namespace Laundry_Management.Controllers
         }
 
         [HttpGet]
+        [Route("GetList")]
         public async Task<ResponseResult> Get()
         {
-            var check = CheckAuthen();
-            if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
+            //var check = CheckAuthen();
+            //if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
             var machine = await _context.Machines.FromSqlRaw("Select * from Machine").ToListAsync();
             if (machine == null) return new ResponseResult().ResponsFailure(null, "");
             return new ResponseResult().ResponseSuccess(machine);
@@ -85,53 +90,21 @@ namespace Laundry_Management.Controllers
         //}
 
         [HttpPost]
-        public async Task<ResponseResult> Add(MachineDTO dto)
+        public async Task<ResponseResult> Add(MachineAddDTO dto)
         {
             var check = CheckAuthen();
-            if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
-            if (String.IsNullOrEmpty(dto.MachineName))
-            {
-                return new ResponseResult().ResponsFailure(null, "");
-            }
-
-            Machine machine = new Machine();
-
-            machine.MachineName = dto.MachineName;
-            machine.MachineType = dto.MachineType;
-            machine.Branch = dto.Branch;
-            machine.Size = dto.Size;
-            machine.Location.LocationName = dto.LocationName;
-            
-            if (machine == null) return new ResponseResult().ResponsFailure(null, "");
-            _context.Machines.Add(machine);
-            await _context.SaveChangesAsync();
-
-            return new ResponseResult().ResponseSuccess(machine);
-
+            if (check == null) { return new ResponseResult().ResponsFailure(null, "Machine not exist"); }
+            await _machineService.AddDTO(dto);
+            return new ResponseResult().ResponseSuccess(dto);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ResponseResult> UpdateMachine(int id, MachineDTO dto)
+        [HttpPut("UpdateMachine")]
+        public async Task<ResponseResult> UpdateMachine(MachineUpdateDTO dto)
         {
             var check = CheckAuthen();
-            if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
-            if (String.IsNullOrEmpty(dto.MachineName))
-            {
-                return new ResponseResult().ResponsFailure(null, "");
-            }
-            var dbmachine = _context.Machines.Where(m => m.MachineId == id).SingleOrDefault();
-            if (dbmachine == null)
-                return new ResponseResult().ResponsFailure(null, "");
-          
-            dbmachine.MachineName = dto.MachineName;
-            dbmachine.MachineType= dto.MachineType;
-            dbmachine.Branch = dto.Branch;
-            dbmachine.Size = dto.Size;
-            dbmachine.Location.LocationName = dto.LocationName;
-            
-            
-            await _context.SaveChangesAsync();
-            return new ResponseResult().ResponseSuccess(dbmachine);
+            if (check == null) { return new ResponseResult().ResponsFailure(null, "Machine not exist"); }
+            await _machineService.UpdateDTO(dto);
+            return new ResponseResult().ResponseSuccess(dto);
         }
 
         //[HttpGet("{MachineId}/{MachineName}")]
@@ -141,29 +114,33 @@ namespace Laundry_Management.Controllers
         //    return result;
         //}
 
-        [HttpDelete("{id}")]
-        public async Task<ResponseResult> DeleteMachine(int id)
+        [HttpDelete("DeleteMachine")]
+        public async Task<ResponseResult> DeleteMachine(MachineDeleteDTO dto)
         {
             var check = CheckAuthen();
             if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
-            var machine = await _context.Machines.FindAsync(id);
-            if (machine == null)
-                return new ResponseResult().ResponsFailure(null, "");
-            _context.Machines.Remove(machine);
-            await _context.SaveChangesAsync();
+            await _machineService.DeleteDTO(dto);
 
-            return new ResponseResult().ResponseSuccess(machine);
+            return new ResponseResult().ResponseSuccess(dto);
 
         }
 
-        [HttpGet("GetLocationFromMachineName")]
-        public async Task<Machine?> GetLocationFromMachineName(string? machineName)
+        [HttpGet("GetByName")]
+        public async Task<Machine?> GetByName(string? machineName)
         {
-            var machine = await _context.Machines
-                .Include(l => l.Location)
-                .Where(l => l.MachineName == machineName)
-                .FirstOrDefaultAsync();
-            return machine;
+            return await _machineService.GetByName(machineName);
+        }
+
+        [HttpGet("GetByLocation")]
+        public async Task<List<Machine>> GetByLocation(int locationId)
+        {
+            return await _machineService.GetByLocation(locationId);
+        }
+
+        [HttpGet("GetByStatus")]
+        public async Task<List<Machine>> GetByState(status status)
+        {
+            return await _machineService.GetByStatus(status);
         }
     }
 }

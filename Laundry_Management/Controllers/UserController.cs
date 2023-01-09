@@ -3,6 +3,8 @@ using Laundry_Management.Controllers.Base;
 using Laundry_Management.Data;
 using Laundry_Management.DTO;
 using Laundry_Management.DTO.Request;
+using Laundry_Management.DTO.UserDTO;
+
 using Laundry_Management.Models;
 using Laundry_Management.Services;
 using Microsoft.AspNetCore.Http;
@@ -20,26 +22,28 @@ namespace Laundry_Management.Controllers
     {
         private readonly LaundryContext _context;
         private readonly IHttpContextAccessor _httpContext;
-        public UserController(LaundryContext context, IHttpContextAccessor httpContext) : base(httpContext)
+        private readonly IUser _user;
+        public UserController(LaundryContext context, IHttpContextAccessor httpContext, IUser _user) : base(httpContext, context)
         {
-            _context = context;
             _httpContext = httpContext;
+            this._user = _user;
+            _context = context;
         }
 
-        [HttpGet]
+        [HttpGet("GetByFilter")]
         public async Task<Paginate> GetByFilter([FromQuery] FitlerUserModel model)
         {
-            var validFilter = new FitlerUserModel(model.PageIndex, model.PageSize);
-            //var lsUser = await _context.Users
-            //.Skip((validFilter.PageIndex - 1) * validFilter.PageSize)
-            //.Take(validFilter.PageSize)
-            //.ToListAsync();
 
-            var queryUser = _context.Users.AsQueryable();
-
-            var lsUser = queryUser.Skip((validFilter.PageIndex - 1) * validFilter.PageSize).Take(validFilter.PageSize).ToList();
-            return new Paginate(lsUser, validFilter.PageIndex, validFilter.PageSize);
-            //return Ok(lsUser);
+            return new Paginate
+            {
+                data = await _context.Users.Skip((model.PageIndex - 1) * model.PageSize).Take(model.PageSize).Select(e => new UserAddDTO
+                {
+                    Phone = e.PhoneNumber,
+                    UserName = e.UserName,
+                }).ToListAsync(),
+                PageIndex = model.PageIndex,
+                PageSize = model.PageSize
+            };
         }
 
         [HttpGet("{id}")]
@@ -49,65 +53,66 @@ namespace Laundry_Management.Controllers
             if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
             var user = await _context.Users.FindAsync(id);
             if (user == null) return new ResponseResult().ResponsFailure(null, "");
-            
+
 
             return new ResponseResult().ResponseSuccess(user);
         }
 
-        [HttpPost]
-        public async Task<ResponseResult> AddUser(UserDTO user)
+        [HttpGet("GetAll")]
+        public async Task<ResponseResult> GetAll()
         {
-            var check = CheckAuthen();
+             var check = CheckAuthen();
             if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
-            if (String.IsNullOrEmpty(user.UserName))
-            {
-                return new ResponseResult().ResponsFailure(null, "");
-            }
-            User dbuser = new User();
-            dbuser.UserName = user.UserName;    
-            dbuser.PhoneNumber = user.Phone;
-            dbuser.CreateDate = DateTime.Now;
-
+            var user = await _context.Users.ToListAsync();
             if (user == null) return new ResponseResult().ResponsFailure(null, "");
-            _context.Users.Add(dbuser);
-            await _context.SaveChangesAsync(); 
+
+
             return new ResponseResult().ResponseSuccess(user);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ResponseResult> UpdateUser(int id, UserDTO user)
+        [HttpPost("AddUser")]
+        public async Task<ResponseResult> AddUser([FromBody] UserAddDTO user)
         {
-            
             var check = CheckAuthen();
             if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
-            if (String.IsNullOrWhiteSpace(user.UserName))
+
+            var userRegister = await _user.Register(new RegisterUser
             {
-                return new ResponseResult().ResponsFailure(null, "");
-            }
+                Phone = user.Phone,
+                Password = user.Password,
+                UserName = user.UserName
+            });
 
-            var dbUser = _context.Users.Where(u => u.UserId == id).SingleOrDefault();
-            if (dbUser == null) return new ResponseResult().ResponsFailure(null, "Invalid User Id");
-            
-            dbUser.UserName = user.UserName;
-            dbUser.PhoneNumber = user.Phone;
+  
+            if (userRegister == null) return new ResponseResult().ResponsFailure();
+            return new ResponseResult().ResponseSuccess(userRegister);
+        }
 
-            await _context.SaveChangesAsync();
+
+        [HttpPut("Update")]
+        public async Task<ResponseResult> Update(UserUpdateDTO user)
+        {
+            var check = CheckAuthen();
+            if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
+            await _user.UpdateDTO(user);
             return new ResponseResult().ResponseSuccess(user);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ResponseResult> Delete(int id)
+
+        [HttpDelete("Delete")]
+        public async Task<ResponseResult> Delete(UserDeleteDTO dto)
         {
             var check = CheckAuthen();
             if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return new ResponseResult().ResponsFailure(null, "");
-            }
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-            return new ResponseResult().ResponseSuccess(user);
+            await _user.DeleteDTO(dto);
+            return new ResponseResult().ResponseSuccess(dto);
+        }
+
+        [HttpGet("GetByName")]
+        public async Task<User> GetByName(string name)
+        {
+            return await _user.GetByName(name);
+
         }
     }
 }

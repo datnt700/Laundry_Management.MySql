@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Laundry_Management.Controllers.Base;
-using Laundry_Management.DTO;
+using Laundry_Management.DTO.LocationDTO;
+using System.Linq;
+using Laundry_Management.Services;
 
 namespace Laundry_Management.Controllers
 {
@@ -15,12 +17,14 @@ namespace Laundry_Management.Controllers
     {
         private readonly LaundryContext _context;
         private readonly IHttpContextAccessor _request;
+        private readonly ILocation _location;
 
 
-        public LocationController(LaundryContext context, IHttpContextAccessor request) : base(request)
+        public LocationController(LaundryContext context, IHttpContextAccessor request, ILocation location) : base(request, context)
         {
             _context = context;
             _request = request;
+            _location = location;
         }
 
         [HttpGet]
@@ -46,61 +50,31 @@ namespace Laundry_Management.Controllers
         }
 
         [HttpPost]
-        public async Task<ResponseResult> Add(LocationDTO dto)
+        public async Task<ResponseResult> Add(LocationAddDTO dto)
         {
             var check = CheckAuthen();
             if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
 
-            if (String.IsNullOrEmpty(dto.LocationName))
-            {
-                return new ResponseResult().ResponsFailure(null, "");
-            }
-
-            Location location = new Location()
-            {
-                LocationName = dto.LocationName,
-                Coordinates = dto.Coordinates
-            };
-
-            if (location == null) return new ResponseResult().ResponsFailure(null, "");
-            _context.Locations.Add(location);
-            await _context.SaveChangesAsync();
-            return new ResponseResult().ResponseSuccess(location);
+            await _location.addDTO(dto);
+            return new ResponseResult().ResponseSuccess(dto);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ResponseResult> Update( int id, LocationDTO dto)
+        [HttpPut("Update")]
+        public async Task<ResponseResult> Update(LocationUpdateDTO dto)
         {
             var check = CheckAuthen();
             if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
-            if (String.IsNullOrEmpty(dto.LocationName))
-            {
-                return new ResponseResult().ResponsFailure(null, "");
-            }
-
-            var dbLocation = _context.Locations.Where(l => l.LocationId == id).SingleOrDefault();
-            if (dbLocation == null)
-            {
-                return new ResponseResult().ResponsFailure(null, "");
-            }
-            dbLocation.LocationName = dto.LocationName;
-            dbLocation.Coordinates= dto.Coordinates;
-
-            await _context.SaveChangesAsync();
-            return new ResponseResult().ResponseSuccess(dbLocation);
+            await _location.updateDTO(dto);
+            return new ResponseResult().ResponseSuccess(dto);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ResponseResult> Delete(int id)
+        [HttpDelete("Delete")]
+        public async Task<ResponseResult> Delete(LocationDeleteDTO dto)
         {
             var check = CheckAuthen();
             if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
-            var location = await _context.Locations.FindAsync(id);
-            if (User == null) return new ResponseResult().ResponsFailure(null, "");
-
-            _context.Locations.Remove(location);
-            await _context.SaveChangesAsync();
-            return new ResponseResult().ResponseSuccess(location);
+            await _location.deleteDTO(dto);
+            return new ResponseResult().ResponseSuccess(dto);
         }
     }
 }

@@ -5,8 +5,8 @@ namespace Laundry_Management.Common
 {
     public class ResponseResult
     {
-        public int StatusCode { get; set; }
-        public dynamic Data { get; set; }
+        public int status { get; set; }
+        public dynamic data { get; set; }
         public string User { get; set; }
         public string Message { get; set; }
 
@@ -14,8 +14,8 @@ namespace Laundry_Management.Common
         {
             return new ResponseResult
             {
-                StatusCode = 200,
-                Data = data,
+                status = 200,
+                data = data,
                 
                 Message = string.IsNullOrWhiteSpace(msg) ? "Thành công" : msg
             };
@@ -25,8 +25,8 @@ namespace Laundry_Management.Common
         {
             return new ResponseResult
             {
-                StatusCode = 400,
-                Data = data,
+                status = 400,
+                data = data,
                 Message = string.IsNullOrWhiteSpace(msg) ? "Thất bại" : msg
             };
         }

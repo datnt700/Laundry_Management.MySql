@@ -21,7 +21,6 @@ namespace Laundry_Management.Common
             // MD5, base64,
             //123456 -> abcde
             return Convert.ToBase64String(Encoding.UTF8.GetBytes(txt));
-            return txt;
         }
 
         public static string hashPassword(string password)
