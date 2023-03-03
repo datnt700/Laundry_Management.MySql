@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Laundry_Management.Models
@@ -15,7 +17,9 @@ namespace Laundry_Management.Models
 
         public int MachineId { get; set; }
         public string MachineName { get; set; } = null!;
-        public sbyte? MachineType { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+
+        public types MachineType { get; set; }
         public string? Branch { get; set; }
         public string? Size { get; set; }
         public ulong? IsActive { get; set; }
@@ -30,9 +34,20 @@ namespace Laundry_Management.Models
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public enum status
         {
+            [EnumMember(Value = "close")]
             close = 3 ,
-            loading,
-            done
+            [EnumMember(Value = "loading")]
+            loading =4,
+            [EnumMember(Value = "done")]
+            done = 5,
+        }
+
+        public enum types
+        {
+            [EnumMember(Value = "WM")]
+            WashingMachine = 1,
+            [EnumMember(Value = "D")]
+            Dryer = 2,
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using Laundry_Management.Controllers.Base;
+using Laundry_Management.DTO;
 using System.Net;
 
 namespace Laundry_Management.Common
 {
-    public class ResponseResult
+    public class ResponseResult 
     {
         public int status { get; set; }
         public dynamic data { get; set; }

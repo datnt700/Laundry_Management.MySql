@@ -1,20 +1,43 @@
 import React from "react";
 import Login from "./components/Authorize/Login";
 import MachineList from "./components/Machine/MachineList";
+import { useRoutes,Outlet } from "react-router-dom";
+import Navbar from "./pages/Navbar";
+import MachineAdd from "./components/Machine/MachineAdd";
+import MachineUpdate from "./components/Machine/MachineUpdate";
+import MachineDelete from "./components/Machine/MachineDelete";
 import Home from "./pages/Home";
-import { useRoutes } from "react-router-dom";
-import MainLayout from "./layouts/MainLayout";
+import User from "./components/Users/UserList";
 function PublicRoutes() {
   let element = useRoutes([
-    {
-        element: <MainLayout />,
-        children: [
-            { path: "/", element: <Home /> },
-            { path: "/login", element: <Login /> },
-            { path: "/machines", element: <MachineList /> },
-        ]
-      }
     
+    // {
+    //     element: <Navbar />,
+    //     children: [
+    //       { path: "/", element: <Home /> },
+    //         { path: "/login", element: <Login /> },
+    //         { path: "/machine", element: <MachineList /> },
+    //         { path: "/user", element: <User /> },
+    //     ],
+    //   }
+    {
+      path: '/',
+      element: <Home />
+    },
+    {
+      path:'/login',
+      element: <Login />
+    },
+    {
+      path:'/machine',
+      children: [
+        {element:<MachineList />, index: true},
+        { path: 'Add', element: <MachineAdd /> },
+        { path: 'Update/:id', element: <MachineUpdate /> },
+        { path: "Delete", element: <MachineDelete /> },
+        
+    ]
+    }
   ]);
   return element;
 }

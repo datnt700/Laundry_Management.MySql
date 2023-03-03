@@ -1,7 +1,8 @@
 ﻿namespace Laundry_Management.DTO.Request
 {
-    public class FitlerUserModel
+    public class FitlerModel 
     {
+        
         public int PageIndex
         {
             get
@@ -22,11 +23,16 @@
             }
             set
             {
-                _PageSize = value == 0 ? 2 : value;
+                _PageSize = value < 0  ? 0 : value;
             }
         }
 
         private int _PageIndex { get; set; }
         private int _PageSize { get; set; }
+
+        public string search { get; set; } = "";
+
+
     }
+
 }

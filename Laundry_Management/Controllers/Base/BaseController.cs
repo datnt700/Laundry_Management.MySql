@@ -7,6 +7,9 @@ using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using System.Collections.Immutable;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Laundry_Management.Controllers.Base
 {
@@ -47,6 +50,15 @@ namespace Laundry_Management.Controllers.Base
             {
                 return null;
             }
+        }
+        public static string Serialize(object obj)
+        {
+            return JsonConvert.SerializeObject(obj);
+        }
+        public static string SerializeWithStringEnum(object obj)
+        {
+            var converter = new StringEnumConverter();
+            return JsonConvert.SerializeObject(obj, converter);
         }
     }
 }

@@ -1,35 +1,58 @@
 import axios from "axios";
+import getCookie from "../hooks/getCookie";
 import removeCookie from "../hooks/removeCookie";
 
 
-const instance = axios.create({
+ const instance = axios.create({
     baseURL: process.env.REACT_APP_URL_API,
-    timeout: 300000
+    timeout: 300000,
+    headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+    }
 });
 
 instance.interceptors.request.use(req=>{
 
-    req.headers.Authorization = "";
+    req.headers.Authorization = `${getCookie("token")}`;
     return req;
 })
 
 instance.interceptors.response.use(
+    
     (response) => {
+        console.log("interceptors",response);
         return response.data
     },
     (error)=>{
-        console.log(error);
+        console.log("e_errr",error);
     }
 );
 
 
+// instance.interceptors.request.use(
+//     config => {
+//         config.headers = { 
+//             'Authorization': `${getCookie("token")}`,
+//             'Accept': 'application/json',
+//             'Content-Type': 'application/x-www-form-urlencoded'
+//           }
+//         return config;
+//     },
+//     error => {
+//         return Promise.reject(error);
+//     }
+// );
 
 const CheckStatus = (response) =>{
-    if( response.status === 200)
+    
+    if(response && response.status === 200)
         return response.data;
 
     return null;
 }
+
+
 
 export const AxiosGet =async (path,params) =>{
     return await instance
@@ -38,7 +61,7 @@ export const AxiosGet =async (path,params) =>{
     .catch(err=>{
         console.log(err)
     })
-}
+}                                                                                              
 
 export const AxiosPost = async(path,body) =>{
     return await instance

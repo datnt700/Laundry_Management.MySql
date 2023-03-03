@@ -30,21 +30,6 @@ namespace Laundry_Management.Controllers
             _context = context;
         }
 
-        [HttpGet("GetByFilter")]
-        public async Task<Paginate> GetByFilter([FromQuery] FitlerUserModel model)
-        {
-
-            return new Paginate
-            {
-                data = await _context.Users.Skip((model.PageIndex - 1) * model.PageSize).Take(model.PageSize).Select(e => new UserAddDTO
-                {
-                    Phone = e.PhoneNumber,
-                    UserName = e.UserName,
-                }).ToListAsync(),
-                PageIndex = model.PageIndex,
-                PageSize = model.PageSize
-            };
-        }
 
         [HttpGet("{id}")]
         public async Task<ResponseResult> GetUserById(int id)
@@ -59,15 +44,13 @@ namespace Laundry_Management.Controllers
         }
 
         [HttpGet("GetAll")]
-        public async Task<ResponseResult> GetAll()
+        public async Task<Paginate> GetAll([FromQuery] FitlerModel model)
         {
-             var check = CheckAuthen();
-            if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
-            var user = await _context.Users.ToListAsync();
-            if (user == null) return new ResponseResult().ResponsFailure(null, "");
-
-
-            return new ResponseResult().ResponseSuccess(user);
+            // var check = CheckAuthen();
+            //if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
+            var user = await _user.GetAll(model);
+            if (model == null) return null;
+            return user;
         }
 
         [HttpPost("AddUser")]
@@ -76,16 +59,9 @@ namespace Laundry_Management.Controllers
             var check = CheckAuthen();
             if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
 
-            var userRegister = await _user.Register(new RegisterUser
-            {
-                Phone = user.Phone,
-                Password = user.Password,
-                UserName = user.UserName
-            });
-
-  
-            if (userRegister == null) return new ResponseResult().ResponsFailure();
-            return new ResponseResult().ResponseSuccess(userRegister);
+           await _user.AddDTO(user);
+            if (user == null) return new ResponseResult().ResponsFailure();
+            return new ResponseResult().ResponseSuccess(user);
         }
 
 

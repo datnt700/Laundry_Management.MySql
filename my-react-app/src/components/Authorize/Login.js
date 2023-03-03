@@ -10,14 +10,14 @@ import useCookies from "react-cookie/cjs/useCookies";
 import "../Authorize/indexAuth.css"
 import styled from 'styled-components';
 import { Box, Button, TextField } from "@mui/material";
-import getLoginAPI from "../../util/router";
 import instance from "../../util/requestURL";
 import autAPI from "../../util/authAPI";
 import { useNavigate } from "react-router-dom";
-
+import API from "../../util/APIConstanst";
+import { AxiosPost } from "../../util/requestURL";
 
 const Wrapper = styled.div`
-height:100vh;
+height:450px;
     position : relative;
 `;
 
@@ -48,32 +48,15 @@ top: 80px;
 export default function Login() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [username, setName] = useState("");
   
   const [isLogin,setIsLogin] = useState(true);
   
-
-  // useEffect(() => {
-  //   const fetchData = async ()=>{
-  //     const dataLogin = await getLoginAPI();
-  //     console.log(dataLogin);
-  //   };
-  //   fetchData()
-  // },[]);
-
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     const request = await axios.post('login')
-  //   }
-  //   fetchData();
-  // },[])
-
   
   
   const [login, setLogin] = useState("");
   const [register, setRegister] = useState("");
   
-  console.log({name, phone, password });
 
   const handleName = (e) => {
     setName(e.target.value);
@@ -87,37 +70,30 @@ export default function Login() {
     setPassword(e.target.value);
   };
 
-  const handleLoginApi = () => {
-    fetchLogin()
+  const handleLoginApi = async () => {
+    await fetchLogin()
   };
+
+  const navigate = useNavigate();
 
   const fetchLogin = async () => {
     try{    
-      const response = await autAPI.login(phone, password);
+      const response = await AxiosPost(API.LOGIN,{phone, password});
+      if(!response){
+        console.log("login looxi");
+        return;
+      }
       console.log('Login successfully: ', response);
       setLogin(response);
       setPhone('');
       setPassword('');
-      setCookie("usrin", JSON.stringify(response));
-
+      console.log(response);
+      setCookie("token", response.Token);
+      navigate("/");
     }catch (error) {
       console.log('Login Failed:', error)
     }
     
-    // instance
-    //   .post('Auth/login', {
-    //     phone: phone,
-    //     password: password,
-    //   })
-    //   .then((result) => {
-    //     // saveTokenInLocalStorage(result.data)
-    //     setCookie("usrin", JSON.stringify(result.data));
-
-    //     console.log(result);
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
   };
 
   const handleRegisterApi = () => {
@@ -126,11 +102,13 @@ export default function Login() {
 
   const fetchRegister = async () => {
     try{
-      const response = await autAPI.register(name,phone,password);
+      const response = await AxiosPost(API.REGISTER,{username,phone,password});
       console.log('Register Successfully', response);
       setRegister(response);
-      setCookie("usrin", JSON.stringify(response));
+      setCookie("token", response.Token);
       setName('');
+      setPhone('');
+      setPassword('');
     }catch(error){
       console.log('Login Failed:', error)
     }
@@ -140,21 +118,142 @@ export default function Login() {
   
   return (
     <Wrapper>
-      {isLogin ?<BoxLogin>
-     LOGIN
-     <TextInput value={phone} type="text" onChange={handlePhone} id="input-with-sx" label="Phone Number" variant="standard" autoFocus/>
-     <TextInput value={password} onChange={handlePassword} type="text" id="input-with-sx" label="Passwrod" variant="standard" />
-     <TextButton onClick={ () => {handleLoginApi();setIsLogin(false)}}>dang nhap</TextButton>
-
-   </BoxLogin>:<BoxLogin>
-   Register   
+      {isLogin ? 
+      <div className="container mt-5">
+        <div className="row-login">
+          <div className="col">
+            <div className="card mx-auto">
+              <div className="card-body">
+                <h1
+                  className="card-title"
+                  style={{ borderBottom: "1px solid #efefef" }}
+                >
+                  React Login Form
+                </h1>
+      <form
+    >
+      <div className="form-group">
+        <label htmlFor="exampleInputEmail1">Phone Number</label>
+        <input
+          type="number"
+          name="phone"
+          className="form-control"
+          id="exampleInputEmail1"
+          aria-describedby="phoneHelp"
+          
+          placeholder="Enter email"
+          value={phone}
+          onChange={handlePhone}
+        />
+        <small id="phoneHelp" className="form-text text-muted">
+          We'll never share your number with anyone else.
+        </small>
+      </div>
+      <div className="form-group">
+        <label htmlFor="exampleInputPassword1">Password</label>
+        <input
+          type="password"
+          name="password"
+          className="form-control"
+          id="exampleInputPassword1"
+         
+          placeholder="Password"
+          value={password}
+          
+          onChange={handlePassword}
+        />
+      </div>
+      <Button //type="submit" className="btn btn-primary left" 
+       onClick={handleLoginApi} 
+      >
+        Login
+      </Button>
+      <button
+        type="button"
+        className="btn btn-secondary right"
+        onClick={() =>{setIsLogin(false)}}
+      >
+        Register
+      </button>
+    </form>
+    </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      :  
    
-     <TextInput value={name} onChange={handleName} type="text" id="input-with-sx" label="User Name" variant="standard" />
-     <TextInput value={phone} onChange={handlePhone} type="text" id="input-with-sx" label="Phone Number" variant="standard" />
+   <div className="container mt-5">
+        <div className="row-register">
+          <div className="col">
+            <div className="card mx-auto">
+              <div className="card-body">
+                <h1
+                  className="card-title"
+                  style={{ borderBottom: "1px solid #efefef" }}
+                >
+                  React Register Form
+                </h1>
+      <form
+      className="needs-validation"
+    >
+      <div className="form-group">
+        <label htmlFor="exampleInputPassword1">Username</label>
+        <input
+          type="text"
+          name="name"
+          className="form-control"
+          id="exampleInputPassword1"
+          required
+          placeholder="Name"
+          value={username}
+          onChange={handleName}
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="exampleInputEmail1">Phone Number</label>
+        <input
+          type="number"
+          name="phone"
+          className="form-control"
+          id="exampleInputEmail1"
+          aria-describedby="phoneHelp"
+          required
+          placeholder="Enter email"
+          value={phone}
+          onChange={handlePhone}
+        />
+        <small id="phoneHelp" className="form-text text-muted">
+          We'll never share your number with anyone else.
+        </small>
+      </div>
+      <div className="form-group">
+        <label htmlFor="exampleInputPassword1">Password</label>
+        <input
+          type="password"
+          name="password"
+          className="form-control"
+          id="exampleInputPassword1"
+          required
+          placeholder="Password"
+          value={password}
+          onChange={handlePassword}
+        />
+      </div>
+      <Button type="submit" className="btn btn-primary left"  onClick={() =>{handleRegisterApi();setIsLogin(true)}}>
+        Submit
+      </Button>
 
-     <TextInput value={password} onChange={handlePassword} type="text" id="input-with-sx" label="Passwrod" variant="standard" />
-     <TextButton onClick={() =>{handleRegisterApi();setIsLogin(true)}}>dang ki</TextButton>
-   </BoxLogin> }
+    </form>
+    </div>
+            </div>
+          </div>
+        </div>
+      </div>
+   }
+
+
+   
       
     </Wrapper>
   );

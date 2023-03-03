@@ -14,4 +14,6 @@ namespace Laundry_Management.DTO.UserDTO
         public string Password { get; set; }
         public DateTime CreateDate { get; set; }
     }
+
+
 }

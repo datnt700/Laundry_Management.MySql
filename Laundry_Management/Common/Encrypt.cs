@@ -2,6 +2,7 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Laundry_Management.Common
 {
@@ -10,6 +11,7 @@ namespace Laundry_Management.Common
         
         public static string Base64Decode(string base64EncodedData)
         {
+            //base64EncodedData.PadRight(base64EncodedData.Length + (base64EncodedData.Length * 3) % 4, '=');
             var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
             return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }

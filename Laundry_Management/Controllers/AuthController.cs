@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -43,12 +44,18 @@ namespace Laundry_Management.Controllers
 
             return new ResponseResult().ResponseSuccess(data);
         }
+
+        public void Jsontodynamic()
+        {
+            dynamic fyn = JsonConvert.DeserializeObject("{\r\n        \"Token\": \"eyJQaG9uZSI6IjEyMzQxMjM0IiwiRXhwaXJlRGF0ZSI6IjIwMjMtMDEtMTlUMDc6MTg6MjAuOTk1MTYyOSswMTowMCJ9\",\r\n        \"UserName\": null,\r\n        \"Phone\": null,\r\n        \"Password\": null,\r\n        \"CreateDate\": \"0001-01-01T00:00:00\"\r\n    }");
+        }
+
         [HttpPost("userRegistration")]
-        public async Task<IActionResult> UserRegistration(RegisterUser model)
+        public async Task<ResponseResult> UserRegistration(RegisterUser model)
         {
             var dbUser = _context.Users.Where(u => u.PhoneNumber == model.Phone).FirstOrDefault();
-            if (dbUser != null) return BadRequest("This Account already exist");
-       
+            if (dbUser != null) return new ResponseResult().ResponsFailure(null, "This Account already exist");
+
             var user = new User();
             user.PhoneNumber = model.Phone;
             user.UserName = model.UserName;
@@ -57,9 +64,9 @@ namespace Laundry_Management.Controllers
             var passHash = Encrypt.hashPassword(model.Password + user.Salt);
             user.PassHash = passHash;
             _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return Ok("User is successfully registerd");
+            var data = await _context.SaveChangesAsync();
+            if (data == null) return new ResponseResult().ResponsFailure(null, "");
+            return new ResponseResult().ResponseSuccess(data);
         }
 
 

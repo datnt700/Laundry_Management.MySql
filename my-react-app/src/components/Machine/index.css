@@ -1,4 +1,4 @@
-.demo{ font-family: 'Noto Sans', sans-serif; }
+/* .demo{ font-family: 'Noto Sans', sans-serif; }
 .panel{
     background: linear-gradient(to right, #2980b9, #2c3e50);
     padding: 0;
@@ -126,7 +126,7 @@
 .panel .panel-footer .col{ line-height: 35px; }
 .pagination{ margin: 0; }
 .pagination li a{
-    color: #fff;
+    color: #333;
     background-color: transparent;
     border: 2px solid transparent;
     font-size: 18px;
@@ -163,3 +163,62 @@
     }
     .panel .panel-heading .btn_group{ text-align: center; }
 }
+
+.App {
+    font-family: sans-serif;
+    text-align: center;
+  }
+  .nav-bar {
+    font-size: 20px;
+    font-family: arial;
+    margin: 50px;
+    background-color: #d75d77;
+    border: 5px solid pink;
+  }
+  
+  .nav-bar ul li a {
+    text-decoration: none;
+    color: white;
+  }
+  
+  .nav-bar ul li {
+    display: inline-block;
+    margin-right: 1em;
+    -webkit-transition: border 1s, border-radius 1s, padding 1s,
+      background-color 1s, color 1s;
+    transition: border 1s, border-radius 1s, padding 1s, background-color 1s,
+      color 1s;
+  } */
+  .row-machine {
+    margin: 20px 40px;
+    padding-bottom: 20px;
+    
+  }
+
+  .btn {
+    
+    display: block;
+    cursor: pointer;
+  }
+
+  .btnadd {
+    width: 50px;
+    height: 50px;
+    margin-left: 1200px;
+    cursor: pointer;
+    
+  }
+
+  #btnupdate {
+    margin-right: 10px
+  }
+
+  .mb-3 {
+    width: 500px;
+    margin: auto;
+    
+  }
+
+  .form-control {
+    text-align: center;
+  }

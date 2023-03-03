@@ -1,0 +1,29 @@
+
+.row-login {
+    width: 500px;
+    margin: auto;
+}
+
+.row-register {
+    width: 500px;
+    margin: auto;
+}
+
+.btn.left {
+    float: right;
+    margin: 10px;
+}
+
+.btn.right {
+    float: left;
+    margin: 10px;
+}
+
+.page-item:active{
+    color: royalblue;
+}
+
+.container mt-5 {
+
+    height: 450px;
+}
