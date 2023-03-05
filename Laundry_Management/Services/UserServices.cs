@@ -130,22 +130,18 @@ namespace Laundry_Management.Services
 
         public async Task<FilterUser> GetAll([FromQuery] FitlerModel model)
         {
-            var totalRecords = await _context.Users.CountAsync();
-            var totalPages = ((double)totalRecords / (double)model.PageSize);
-            int roundedTotalPages = (int)Math.Ceiling(totalPages);
+            var query = _context.Users.Where(c => (!string.IsNullOrEmpty(model.search)) ? c.UserName.Contains(model.search) : true);
 
             return new FilterUser
             {
-                LisData = await _context.Users.Skip((model.PageIndex - 1) * model.PageSize).Take(model.PageSize).Select(e => new UserAddDTO
+                LisData = await query.Skip((model.PageIndex - 1) * model.PageSize).Take(model.PageSize).Select(e => new UserAddDTO
                 {
                     UserName = e.UserName,
                     Phone = e.PhoneNumber,
 
                 }).ToListAsync(),
-                PageIndex = model.PageIndex,
-                PageSize = model.PageSize,
-                TotalCount = totalRecords,
-                TotalPages = roundedTotalPages
+                TotalCount = await query.CountAsync(),
+
             };
         }
     }

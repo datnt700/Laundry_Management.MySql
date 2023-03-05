@@ -7,12 +7,7 @@ using Laundry_Management.DTO.UserDTO;
 
 using Laundry_Management.Models;
 using Laundry_Management.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using System.Numerics;
-using System.Reflection.PortableExecutable;
 
 namespace Laundry_Management.Controllers
 {
@@ -44,13 +39,14 @@ namespace Laundry_Management.Controllers
         }
 
         [HttpGet("GetAll")]
-        public async Task<Paginate> GetAll([FromQuery] FitlerModel model)
+        public async Task<ResponseResult> GetAll([FromQuery] FitlerModel model)
         {
             // var check = CheckAuthen();
             //if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
             var user = await _user.GetAll(model);
-            if (model == null) return null;
-            return user;
+            if (model == null) return new ResponseResult().ResponsFailure(null, "");
+            var response = new ResponseResult().ResponseSuccess(user);
+            return response;
         }
 
         [HttpPost("AddUser")]

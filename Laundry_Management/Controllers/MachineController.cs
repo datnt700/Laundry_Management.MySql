@@ -43,8 +43,8 @@ namespace Laundry_Management.Controllers
         [HttpGet("GetByFilter")]
         public async Task<ResponseResult> GetByFilter([FromQuery] FitlerModel model)
         {
-            var check = CheckAuthen();
-            if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
+            //var check = CheckAuthen();
+            //if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
             var machine = await _machineService.GetAll(model);
             if (machine == null) return new ResponseResult().ResponsFailure(null, "");
             var response = new ResponseResult().ResponseSuccess(machine);

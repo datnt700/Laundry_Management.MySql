@@ -7,7 +7,7 @@ import MachineAdd from "./components/Machine/MachineAdd";
 import MachineUpdate from "./components/Machine/MachineUpdate";
 import MachineDelete from "./components/Machine/MachineDelete";
 import Home from "./pages/Home";
-import User from "./components/Users/UserList";
+import UserList from "./components/Users/UserList";
 function PublicRoutes() {
   let element = useRoutes([
     
@@ -35,9 +35,18 @@ function PublicRoutes() {
         { path: 'Add', element: <MachineAdd /> },
         { path: 'Update/:id', element: <MachineUpdate /> },
         { path: "Delete", element: <MachineDelete /> },
-        
+    ]
+    },
+    {
+      path:'/user',
+      children: [
+        {element:<UserList />, index: true},
+        // { path: 'Add', element: <MachineAdd /> },
+        // { path: 'Update/:id', element: <MachineUpdate /> },
+        // { path: "Delete", element: <MachineDelete /> },
     ]
     }
+    
   ]);
   return element;
 }

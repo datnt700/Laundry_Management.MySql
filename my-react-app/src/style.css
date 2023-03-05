@@ -1,6 +1,9 @@
 .App {
     font-family: sans-serif;
     text-align: center;
+    margin: 0; 
+    height: 100%;
+    overflow: hidden;
   }
   .nav-bar {
     font-size: 20px;

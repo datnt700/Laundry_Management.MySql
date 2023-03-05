@@ -9,12 +9,13 @@ import removeCookie from "../../hooks/removeCookie";
 import useCookies from "react-cookie/cjs/useCookies";
 import "../Authorize/indexAuth.css"
 import styled from 'styled-components';
-import { Box, Button, TextField } from "@mui/material";
+import { Box, TextField } from "@mui/material";
 import instance from "../../util/requestURL";
 import autAPI from "../../util/authAPI";
 import { useNavigate } from "react-router-dom";
 import API from "../../util/APIConstanst";
 import { AxiosPost } from "../../util/requestURL";
+import Button from '@mui/material/Button';
 
 const Wrapper = styled.div`
 height:450px;
@@ -40,9 +41,10 @@ top: 30px;
 `
 
 const TextButton = styled(Button)`
-top: 80px;
-
-
+top: 10px;
+left: 120px;
+width: 90px;
+height: 40px;
 `
 
 export default function Login() {
@@ -163,11 +165,11 @@ export default function Login() {
           onChange={handlePassword}
         />
       </div>
-      <Button //type="submit" className="btn btn-primary left" 
+      <TextButton type="submit" variant="contained" color="success"
        onClick={handleLoginApi} 
       >
         Login
-      </Button>
+      </TextButton>
       <button
         type="button"
         className="btn btn-secondary right"
@@ -240,7 +242,8 @@ export default function Login() {
           onChange={handlePassword}
         />
       </div>
-      <Button type="submit" className="btn btn-primary left"  onClick={() =>{handleRegisterApi();setIsLogin(true)}}>
+      <Button type="submit" variant="contained" 
+  onClick={() =>{handleRegisterApi();setIsLogin(true)}}>
         Submit
       </Button>
 

@@ -9,4 +9,8 @@
     Dryer: "Dryer",
   })
 
-  export {machineStatus, machineTypes};
+  const machineActive = ({
+    On: "On",
+    Off: "Off",
+  })
+  export {machineStatus, machineTypes,machineActive};
