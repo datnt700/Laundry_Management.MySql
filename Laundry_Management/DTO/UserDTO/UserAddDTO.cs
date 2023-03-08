@@ -4,6 +4,7 @@ namespace Laundry_Management.DTO.UserDTO
 {
     public class UserAddDTO
     {
+        public int Id { get; set; }
         public string Token { get; set; }
 
         [Required]

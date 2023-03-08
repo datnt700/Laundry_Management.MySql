@@ -7,8 +7,6 @@ namespace Laundry_Management.Models
     {
         public User()
         {
-            Locations = new HashSet<Location>();
-            MachineHistories = new HashSet<MachineHistory>();
             RoleUsers = new HashSet<RoleUser>();
         }
 
@@ -23,8 +21,6 @@ namespace Laundry_Management.Models
         public DateTime? CreateDate { get; set; }
         public long? Money { get; set; }
 
-        public virtual ICollection<Location> Locations { get; set; }
-        public virtual ICollection<MachineHistory> MachineHistories { get; set; }
         public virtual ICollection<RoleUser> RoleUsers { get; set; }
     }
 }

@@ -14,7 +14,6 @@ namespace Laundry_Management.Procedures
         public int? LocationId { get; set; }
 
         public virtual Location? Location { get; set; }
-        public virtual ICollection<MachineHistory> MachineHistories { get; set; }
         public virtual ICollection<MachineMode> MachineModes { get; set; }
     }
 }

@@ -11,7 +11,6 @@ namespace Laundry_Management.Models
     {
         public Machine()
         {
-            MachineHistories = new HashSet<MachineHistory>();
             MachineModes = new HashSet<MachineMode>();
         }
 
@@ -27,7 +26,6 @@ namespace Laundry_Management.Models
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public status Status { get; set; }
         public virtual Location? Location { get; set; }
-        public virtual ICollection<MachineHistory> MachineHistories { get; set; }
         public virtual ICollection<MachineMode> MachineModes { get; set; }
 
 

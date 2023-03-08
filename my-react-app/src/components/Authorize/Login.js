@@ -80,7 +80,7 @@ export default function Login() {
 
   const fetchLogin = async () => {
     try{    
-      const response = await AxiosPost(API.LOGIN,{phone, password});
+      const response = await AxiosPost(API.LOGIN,{Phone:phone, Password:password});
       if(!response){
         console.log("login looxi");
         return;
@@ -165,7 +165,7 @@ export default function Login() {
           onChange={handlePassword}
         />
       </div>
-      <TextButton type="submit" variant="contained" color="success"
+      <TextButton type="button" variant="contained" color="success"
        onClick={handleLoginApi} 
       >
         Login

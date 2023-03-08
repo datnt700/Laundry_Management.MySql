@@ -7,6 +7,7 @@ const API = {
     MACHINE_ADD: "Machine/AddMachine",
     MACHINE_UPDATE: "Machine/UpdateMachine",
     DELETE: "Machine/delete",
+    USER_DELETE: "User/Delete"
 
 }
 

@@ -19,7 +19,6 @@ namespace Laundry_Management.Data
 
         public virtual DbSet<Location> Locations { get; set; } = null!;
         public virtual DbSet<Machine> Machines { get; set; } = null!;
-        public virtual DbSet<MachineHistory> MachineHistories { get; set; } = null!;
         public virtual DbSet<MachineMode> MachineModes { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<RoleUser> RoleUsers { get; set; } = null!;
@@ -35,7 +34,6 @@ namespace Laundry_Management.Data
             {
                 entity.ToTable("location");
 
-                entity.HasIndex(e => e.UserIdHost, "fk_location_users1_idx");
 
                 entity.Property(e => e.LocationId).HasColumnName("location_id");
 
@@ -50,13 +48,6 @@ namespace Laundry_Management.Data
                 entity.Property(e => e.LocationName)
                     .HasMaxLength(45)
                     .HasColumnName("location_name");
-
-                entity.Property(e => e.UserIdHost).HasColumnName("user_id_host");
-
-                entity.HasOne(d => d.UserIdHostNavigation)
-                    .WithMany(p => p.Locations)
-                    .HasForeignKey(d => d.UserIdHost)
-                    .HasConstraintName("fk_location_users1");
             });
 
             modelBuilder.Entity<Machine>(entity =>
@@ -89,56 +80,10 @@ namespace Laundry_Management.Data
 
                 entity.Property(e => e.Status).HasColumnName("status");
 
-                entity.HasOne(d => d.Location)
-                    .WithMany(p => p.Machines)
-                    .HasForeignKey(d => d.LocationId)
-                    .HasConstraintName("fk_machine_location1");
+                
             });
 
-            modelBuilder.Entity<MachineHistory>(entity =>
-            {
-                entity.HasKey(e => e.HistoryId)
-                    .HasName("PRIMARY");
-
-                entity.ToTable("machine_history");
-
-                entity.HasIndex(e => e.LocationId, "fk_machine_history_location1_idx");
-
-                entity.HasIndex(e => e.MachineId, "fk_machine_history_machine1_idx");
-
-                entity.HasIndex(e => e.UserId, "fk_machine_history_users1_idx");
-
-                entity.Property(e => e.HistoryId).HasColumnName("history_id");
-
-                entity.Property(e => e.LocationId).HasColumnName("location_id");
-
-                entity.Property(e => e.MachineId).HasColumnName("machine_id");
-
-                entity.Property(e => e.Money).HasColumnName("money");
-
-                entity.Property(e => e.Status).HasColumnName("status");
-
-                entity.Property(e => e.TimeUse)
-                    .HasColumnType("time")
-                    .HasColumnName("time_use");
-
-                entity.Property(e => e.UserId).HasColumnName("user_id");
-
-                entity.HasOne(d => d.Location)
-                    .WithMany(p => p.MachineHistories)
-                    .HasForeignKey(d => d.LocationId)
-                    .HasConstraintName("fk_machine_history_location");
-
-                entity.HasOne(d => d.Machine)
-                    .WithMany(p => p.MachineHistories)
-                    .HasForeignKey(d => d.MachineId)
-                    .HasConstraintName("fk_machine_history_machine");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.MachineHistories)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("fk_machine_history_users");
-            });
+           
 
             modelBuilder.Entity<MachineMode>(entity =>
             {

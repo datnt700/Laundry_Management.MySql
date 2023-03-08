@@ -15,8 +15,10 @@ function PublicRoutes() {
     //     element: <Navbar />,
     //     children: [
     //       { path: "/", element: <Home /> },
-    //         { path: "/login", element: <Login /> },
-    //         { path: "/machine", element: <MachineList /> },
+    //         { path: "/login", ‘‘‘‘‘element: <Login /> },
+    //         { path: "/login", elv©◊v‘“‘‘ement: <Login /> },
+    
+    
     //         { path: "/user", element: <User /> },
     //     ],
     //   }

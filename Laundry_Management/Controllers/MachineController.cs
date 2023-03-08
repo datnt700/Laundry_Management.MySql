@@ -132,8 +132,7 @@ namespace Laundry_Management.Controllers
         [HttpDelete("delete")]
         public async Task<ResponseResult> DeleteMachine(IdInput id)
         {
-            var check = CheckAuthen();
-            if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
+           
             var machine = await _machineService.DeleteDTO(id.Id);
             if (machine == null) return new ResponseResult().ResponsFailure(null, "");
             return new ResponseResult().ResponseSuccess(id.Id);

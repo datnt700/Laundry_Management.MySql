@@ -72,12 +72,11 @@ namespace Laundry_Management.Controllers
 
 
         [HttpDelete("Delete")]
-        public async Task<ResponseResult> Delete(UserDeleteDTO dto)
+        public async Task<ResponseResult> Delete(deleteId id)
         {
-            var check = CheckAuthen();
-            if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
-            await _user.DeleteDTO(dto);
-            return new ResponseResult().ResponseSuccess(dto);
+            
+            var user = await _user.DeleteDTO(id.Id);
+            return new ResponseResult().ResponseSuccess(id.Id);
         }
 
         [HttpGet("GetByName")]
@@ -85,6 +84,11 @@ namespace Laundry_Management.Controllers
         {
             return await _user.GetByName(name);
 
+        }
+
+        public class deleteId
+        {
+            public int Id { get; set; }
         }
     }
 }

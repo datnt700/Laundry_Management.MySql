@@ -29,9 +29,7 @@ const MachineList = () => {
     // if(!token){ navigate("/login")}
     // else {   
     AxiosGet(API.GET_FILTER_MACHINE,{PageIndex:index,PageSize : size,search : searching}).then((data) => {
-    
         console.log(data);
-  
         console.log(data.ListData);
         setpageCount(Math.ceil(data.TotalCount/size))
         console.log(pageCount);

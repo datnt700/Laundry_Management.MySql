@@ -18,7 +18,7 @@ namespace Laundry_Management.Services
 
         Task<UserUpdateDTO> UpdateDTO(UserUpdateDTO dto);
 
-        Task<UserDeleteDTO> DeleteDTO(UserDeleteDTO dto);
+        Task<UserDeleteDTO> DeleteDTO(int id);
 
         Task<User> GetByName(string name);
 
@@ -110,14 +110,22 @@ namespace Laundry_Management.Services
 
         }
 
-        public async Task<UserDeleteDTO> DeleteDTO(UserDeleteDTO dto)
+        public async Task<UserDeleteDTO> DeleteDTO(int id)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == dto.Id);
-            if (user == null) return null;
-            _context.Users.Remove(user);
-            int res = await _context.SaveChangesAsync();
-            if (res < 1) return null;
-            return new UserDeleteDTO();
+            try
+            {
+                _context.Locations.RemoveRange(_context.Locations.ToList());
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
+                if (user == null) return null;
+                _context.Users.Remove(user);
+                int res = await _context.SaveChangesAsync();
+                if (res < 1) return null;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("{0} Exception caught.", e.Message);
+            }
+                return new UserDeleteDTO();
         }
 
         public async Task<User> GetByName(string name)
@@ -136,6 +144,7 @@ namespace Laundry_Management.Services
             {
                 LisData = await query.Skip((model.PageIndex - 1) * model.PageSize).Take(model.PageSize).Select(e => new UserAddDTO
                 {
+                    Id = e.UserId,
                     UserName = e.UserName,
                     Phone = e.PhoneNumber,
 

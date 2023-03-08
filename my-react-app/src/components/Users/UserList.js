@@ -2,7 +2,7 @@
 import ReactPaginate from "react-paginate";
 import { useEffect, useState } from "react";
 import autAPI from "../../util/authAPI";
-import instance, { AxiosGet } from "../../util/requestURL";
+import instance, { AxiosDelete, AxiosGet, AxiosPost } from "../../util/requestURL";
 import axios from "axios";
 import PostList from ".";
 import Paper from '@mui/material/Paper';
@@ -14,8 +14,11 @@ import TableHead from '@mui/material/TableHead';
 import { BsFillPencilFill, BsFillXSquareFill, BsPlusSquare,BsSearch } from "react-icons/bs";
 import TableRow from '@mui/material/TableRow';
 import API from "../../util/APIConstanst"
-
+import UserDelete from "./UserDelete";
 import Input from '@mui/joy/Input';
+import UserAdd from "./UserAdd";
+import Button from '@mui/material/Button';
+import * as React from 'react';
 
 
 const User = () => {
@@ -23,40 +26,66 @@ const User = () => {
   const [items, setItem] = useState([]);
   const [size, setSize] = useState(5)
   const [index, setIndex] = useState(1)
-  const [searching,setSearch] =useState()
-  console.log(size);
-  console.log(index);
+  const [searching,setSearch] =useState("")
+ 
   const [pageCountUser, setpageCountUser] = useState(0)
+  const [showModal, setShowModal] = useState(false);
+  const [itemToDeleteId, setItemToDeleteId] = useState(0);
 
-  
-    const getList = async () => {
-      await AxiosGet(API.GET_FILTER_USER,{PageIndex:index,PageSize : size,search : searching}).then((response) => {
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  console.log(index)
+    const getList =  () => {
+      let param =  {PageIndex:index,PageSize : size};
+      if (searching && searching.trim().length > 0) {
+        param.search = searching
+      }
+      AxiosGet(API.GET_FILTER_USER,param).then((response) => {
         console.log(response)                                                                                                                                             
         setpageCountUser(Math.ceil(response.TotalCount/size))
         console.log(response.ListData);
         setItem(response.LisData)
-        
-      }).catch((error) => {
+        }).catch((error) => {
         console.log(error);
-      });                                                                                                                                                            
+      });
   };
   
   useEffect(() => {
     getList();
   },[searching]);
                                                                                                                                                                           
-                                                                                                      
+    const showConfirmDeleteHandler = (id) => {
+      console.log("Id: ",id)
+      setShowModal(true);
+      setItemToDeleteId(id);
+    }                                                                                            
                                                   
-  // const fetchComments = async (currentPage) => {
-  //   const response = await instance.get(
-  //     // `http://localhost:3004/comments?_page=${currentPage}&_limit=12`
-  //     `User/GetAll?PageIndex=${currentPage}&PageSize=5`
-  //     );
-  //     const {data} = response
-  //     console.log(data);
-  //     return data
-  //   }; 
+    function hideConfirmDeleteHandler() {
+      setShowModal(false);
+      setItemToDeleteId(0);
+    }
 
+    const confirmDeleteHandler = ()=> {
+      try {
+        console.log("itemToDeleteId: ",itemToDeleteId)
+        const response = AxiosDelete(API.USER_DELETE,{data:{id:itemToDeleteId}})
+        setShowModal(false)
+        console.log(response)
+        
+        setItem(
+          items.filter(e => {
+            return  e.UserId !== itemToDeleteId;
+          })
+          );
+          setItemToDeleteId(0)
+        
+      } catch (error) {
+        console.log("Delete failed: " ,error)
+      }
+    }
+    
   const handlePageClick = async (data) =>{
     console.log(data.selected);
     let currentPage = data.selected +1;
@@ -64,6 +93,20 @@ const User = () => {
     getList();
   }
   return (
+
+    <><UserDelete
+        showModal={showModal}
+        title="Delete Confirmation"
+        body="Are you want delete this itme?"
+        confirmDeleteHandler={confirmDeleteHandler}
+        hideConfirmDeleteHandler={hideConfirmDeleteHandler}
+      ></UserDelete>
+      <UserAdd>
+        open= {open}
+        title="fffffff"
+        body="fgdgdfg"
+      </UserAdd>
+      <Button onClick={handleOpen}>Open modal</Button>
     <div className="container">
       <TableContainer component={Paper} sx={{ mt: 10 }}>
         <Input
@@ -94,7 +137,7 @@ const User = () => {
                   key={key}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell align="right">{key}</TableCell>
+                  <TableCell align="right">{row.Id}</TableCell>
 
                   <TableCell align="right">{row.UserName}</TableCell>
                   <TableCell align="right">{row.Phone}</TableCell>
@@ -105,9 +148,9 @@ const User = () => {
                     />
 
                     <BsFillXSquareFill
-                      // onClick={() => {
-                      //   showConfirmDeleteHandler(item.MachineId);
-                      // }}
+                      onClick={() => {
+                        showConfirmDeleteHandler(row.Id);
+                      }}
                     />
                   </TableCell>
                 </TableRow>
@@ -140,7 +183,7 @@ const User = () => {
         breakLinkClassName={"page-link"}
         activeClassName={"active"}
       />
-    </div>
+    </div></>
   );
 }
 

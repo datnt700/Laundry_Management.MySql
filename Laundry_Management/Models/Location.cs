@@ -7,7 +7,6 @@ namespace Laundry_Management.Models
     {
         public Location()
         {
-            MachineHistories = new HashSet<MachineHistory>();
             Machines = new HashSet<Machine>();
         }
 
@@ -15,10 +14,7 @@ namespace Laundry_Management.Models
         public string LocationName { get; set; } = null!;
         public string? Coordinates { get; set; }
         public ulong? IsActive { get; set; }
-        public int? UserIdHost { get; set; }
 
-        public virtual User? UserIdHostNavigation { get; set; }
-        public virtual ICollection<MachineHistory> MachineHistories { get; set; }
         public virtual ICollection<Machine> Machines { get; set; }
     }
 }
