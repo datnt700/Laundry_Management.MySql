@@ -7,7 +7,7 @@ import { Outlet } from 'react-router-dom';
   return (
     <>
     <Modal
-      show={props.showModal}
+      show={props.shows}
       onHide={() => {
         props.hideConfirmDeleteHandler();
       }}
@@ -22,11 +22,12 @@ import { Outlet } from 'react-router-dom';
           variant="secondary"
           onClick={() => {
             props.hideConfirmDeleteHandler();
-          }}
+           }}
+           className='btnConfirmDelete'
         >
           Close
         </Button>
-        <Button
+        <Button className='btnConfirmDelete'
           variant="danger"
           onClick={() => {
             props.confirmDeleteHandler();

@@ -1,4 +1,26 @@
-/* .demo{ font-family: 'Noto Sans', sans-serif; }
+ .demo{ font-family: 'Noto Sans', sans-serif; }
+
+  .col-md-offset-1 col-md-10{
+    position: relative;
+    left: 120px;
+  
+ }
+ .panel{
+  /* background: linear-gradient(to right, #2980b9, #2c3e50);
+  padding: 0;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 0 0 5px rgba(0,0,0,0.05),0 0 0 10px rgba(0,0,0,0.05); */
+  /* position: absolute; */
+  position: relative;
+    left: 120px;
+    padding-top: 20px;
+    padding-right: 20px;
+  border-radius: 10px;
+  border: none;
+  box-shadow: 0 0 0 5px rgba(0,0,0,0.05),0 0 0 10px rgba(0,0,0,0.05); 
+}
+/*
 .panel{
     background: linear-gradient(to right, #2980b9, #2c3e50);
     padding: 0;
@@ -122,8 +144,8 @@
     background-color: transparent;
     padding: 15px;
     border: none;
-}
-.panel .panel-footer .col{ line-height: 35px; }
+} */
+/* .panel .panel-footer .col{ line-height: 35px; }
 .pagination{ margin: 0; }
 .pagination li a{
     color: #333;
@@ -155,14 +177,14 @@
 .pagination li:first-child a,
 .pagination li:last-child a{
     border-radius: 50%;
-}
-@media only screen and (max-width:767px){
+} */
+/* @media only screen and (max-width:767px){
     .panel .panel-heading .title{
         text-align: center;
         margin: 0 0 10px;
     }
     .panel .panel-heading .btn_group{ text-align: center; }
-}
+} */
 
 .App {
     font-family: sans-serif;
@@ -197,22 +219,31 @@
 
   .btn {
     
-    display: block;
-    cursor: pointer;
+    width:80px;
+    text-align: center;
   }
 
   .btnadd {
     width: 50px;
     height: 50px;
-    margin-left: 1200px;
+    margin-left: 1100px;
     cursor: pointer;
     
   }
 
-  #btnupdate {
-    margin-right: 10px
+  .btnupdate {
+    float: left;
+    margin: 0 10px;
+    
   }
 
+  .btnDelete {
+    float: left;
+  }
+
+  .btnConfirmDelete {
+    WIDTH: 800px;height: 60px;
+  }
   .mb-3 {
     width: 500px;
     margin: auto;
@@ -221,4 +252,48 @@
 
   .form-control {
     text-align: center;
+  }
+
+  
+.pagination {
+    margin: 15px auto;
+    display: flex;
+    list-style: none;
+    outline: none;
+    justify-content: center
+    
+  }
+  .pagination > .active > a{
+    background-color: #061112 ;
+    border-color: #061112 ;
+    color: #fff;
+  }
+  .pagination > li > a{
+    border: 1px solid #061112 ;
+    padding: 5px 10px;
+    outline: none;
+    cursor: pointer;
+    color: #333;
+    background-color: transparent;
+    border: 2px solid transparent;
+    font-size: 18px;
+    font-weight: 500;
+    text-align: center;
+    line-height: 31px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50px;
+    transition: all 0.3s ease 0s;
+  }
+  .pagination > .active > a, .pagination > .active > span, .pagination > .active > a:hover, .pagination > .active > span:hover, .pagination > .active > a:focus, .pagination > .active > span:focus{
+    background-color: #061112 ;
+    border-color: #061112;
+    outline: none ;
+  }
+  .pagination > li > a, .pagination > li > span{
+    color: #061112;
+    text-decoration: none;
+  }
+  .pagination > li:first-child > a, .pagination > li:first-child > span, .pagination > li:last-child > a, .pagination > li:last-child > span{
+    border-radius: 50%;
   }

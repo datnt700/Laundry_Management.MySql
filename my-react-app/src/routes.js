@@ -4,7 +4,6 @@ import MachineList from "./components/Machine/MachineList";
 import { useRoutes,Outlet } from "react-router-dom";
 import Navbar from "./pages/Navbar";
 import MachineAdd from "./components/Machine/MachineAdd";
-import MachineUpdate from "./components/Machine/MachineUpdate";
 import MachineDelete from "./components/Machine/MachineDelete";
 import Home from "./pages/Home";
 import UserList from "./components/Users/UserList";
@@ -35,7 +34,6 @@ function PublicRoutes() {
       children: [
         {element:<MachineList />, index: true},
         { path: 'Add', element: <MachineAdd /> },
-        { path: 'Update/:id', element: <MachineUpdate /> },
         { path: "Delete", element: <MachineDelete /> },
     ]
     },

@@ -77,7 +77,7 @@ namespace Laundry_Management.Controllers
 
 
         [HttpGet]
-        [Route("{id:int}")]
+        [Route("GetById")]
         public async Task<ResponseResult> GetById(int id)
         {
             //var check = CheckAuthen();

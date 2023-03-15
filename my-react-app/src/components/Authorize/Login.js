@@ -111,6 +111,7 @@ export default function Login() {
       setName('');
       setPhone('');
       setPassword('');
+      navigate("/login");
     }catch(error){
       console.log('Login Failed:', error)
     }
@@ -242,7 +243,7 @@ export default function Login() {
           onChange={handlePassword}
         />
       </div>
-      <Button type="submit" variant="contained" 
+      <Button type="button" variant="contained" 
   onClick={() =>{handleRegisterApi();setIsLogin(true)}}>
         Submit
       </Button>

@@ -22,10 +22,8 @@ namespace Laundry_Management.Models
         public string? Branch { get; set; }
         public string? Size { get; set; }
         public ulong? IsActive { get; set; }
-        public int? LocationId { get; set; }
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public status Status { get; set; }
-        public virtual Location? Location { get; set; }
         public virtual ICollection<MachineMode> MachineModes { get; set; }
 
 

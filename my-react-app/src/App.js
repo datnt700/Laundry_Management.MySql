@@ -5,7 +5,6 @@ import Footer from "./pages/Footer";
 import Home from "./pages/Home";
 import MachineList from "./components/Machine/MachineList";
 import MachineAdd from './components/Machine/MachineAdd';
-import MachineUpdate from './components/Machine/MachineUpdate';
 
 
 import PublicRoutes from "./routes";

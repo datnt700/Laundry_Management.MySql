@@ -1,16 +1,15 @@
-.container-footer {
+/* .container-footer {
   /* text-align:center;
-  position: relative; */
+  position: relative; 
   
 
  
-}
+} */
 
 .footer {
     width: 100%;
    background-color: #121619; 
-    position: fixed;
-    bottom: 0;
+    
     padding: 10px 10px 0px 10px;
     height: 150px;
 

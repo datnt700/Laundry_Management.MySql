@@ -11,16 +11,31 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import styled from 'styled-components';
-
+import { BsFillPencilFill, BsFillXSquareFill, BsPlusSquare,BsSearch } from "react-icons/bs";
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
 const TextButton = styled(Button)`
-display: 'inline-flex';
-padding: 30px;
-`;
-const FormAdd = styled.div`
-padding: 20px;
+position: relative;
+    left: 190px;
+    padding-top: 20px;
+
 `;
 
+const FormAdd = styled(Form)`
+padding:0 120px;
+`;
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 800,
+  bgcolor: 'background.paper',
+  borderRadius:1,
+  boxShadow: 24,
+  p: 4,
+};
 
 
 export default function MachineAdd() {
@@ -29,11 +44,17 @@ export default function MachineAdd() {
   const [branch,setBranch] = useState('');
   const [size, setSize]= useState('');
   const [status,setStatus] = useState('');
-  // const MachineName = useRef("");
-  // const MachineType = useRef("");
-  // const Branch = useRef("");
-  // const Size = useRef("");
-  // const Status = useRef("");
+ 
+  const [isShow, invokeModel] = React.useState(false);
+    const initModel = () => invokeModel(!isShow);
+    const handleClose = () => {
+      invokeModel(false);
+      setName("");
+      setType("");
+      setBranch("");
+      setSize("");
+      setStatus("");
+    };
   const [add, setAdd] = useState("")
   
   const handleName = (e) => {
@@ -78,7 +99,16 @@ export default function MachineAdd() {
   }
 
   return (
+    <>
+    <BsPlusSquare className="btnadd"   onClick={initModel}/>
     <div>
+    <Modal
+        open={isShow}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
       <legend>Create</legend>
       <Form>
       <FormAdd>
@@ -86,7 +116,7 @@ export default function MachineAdd() {
           <Form.Label>Name</Form.Label>
           <Form.Control type="text" value={name} onChange={handleName} />
         </Form.Group>
-        <FormControl sx={{ width: 500 }}>
+        <FormControl sx={{ width: 500, textAlign: 'center' }}>
           <InputLabel id="demo-simple-select-label">Type</InputLabel>
           <Select
             labelId="demo-simple-select-label"
@@ -111,7 +141,7 @@ export default function MachineAdd() {
           <Form.Label>Size</Form.Label>
           <Form.Control type="text" value={size} onChange={handleSize} />
         </Form.Group>
-        <FormControl sx={{ width: 500 }}>
+        <FormControl sx={{ width: 500, textAlign: 'center' }}>
           <InputLabel id="demo-simple-select-label">Status</InputLabel>
           <Select
             labelId="demo-simple-select-label"
@@ -127,14 +157,15 @@ export default function MachineAdd() {
         </FormControl>
       </FormAdd>
       <TextButton>
-        <Button variant="contained" type="button" onClick={()=>navigate("/")} sx={{mr: '150px'}}>
-          Back
-        </Button>
+
         <Button variant="contained" type="button" onClick={addMachine} sx={{ml: '150px'}}>
         Add
         </Button>
         </TextButton>
       </Form>
+      </Box>
+      </Modal>
     </div>
+    </>
   );
 }

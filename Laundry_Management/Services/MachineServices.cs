@@ -25,7 +25,7 @@ namespace Laundry_Management.Services
 
         Task<Machine> GetByName(string machineName);
 
-        Task<List<Machine>> GetByLocation(int locationId);
+        //Task<List<Machine>> GetByLocation(int locationId);
 
         Task<List<Machine>> GetByStatus(status status);
 
@@ -44,6 +44,9 @@ namespace Laundry_Management.Services
 
         public async Task<MachineAddDTO> AddDTO(MachineAddDTO dto)
         {
+            try
+            {
+
             Machine machine = new Machine
             {
                 MachineName = dto.MachineName,
@@ -57,6 +60,12 @@ namespace Laundry_Management.Services
             _context.Machines.Add(machine);
             var res = await _context.SaveChangesAsync();
             if (res < 1) return null;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("ERROR: ", e.Message);
+            }
             return new MachineAddDTO();
 
         }
@@ -91,6 +100,7 @@ namespace Laundry_Management.Services
             dbMachine.MachineType = (types)dto.MachineType;
             dbMachine.Branch = dto.Branch;
             dbMachine.Size = dto.Size;
+            dbMachine.Status = (status)dto.Status;
 
             int res = await _context.SaveChangesAsync();
             if (res < 1) return null;
@@ -107,15 +117,15 @@ namespace Laundry_Management.Services
             return machine;
         }
 
-        public async Task<List<Machine>> GetByLocation(int locationId)
-        {
-            if (locationId == null) return null;
+        //public async Task<List<Machine>> GetByLocation(int locationId)
+        //{
+        //    if (locationId == null) return null;
 
-            var machine = await _context.Machines
-               .Where(l => l.LocationId == locationId)
-               .ToListAsync();
-            return machine;
-        }
+        //    var machine = await _context.Machines
+        //       .Where(l => l.LocationId == locationId)
+        //       .ToListAsync();
+        //    return machine;
+        //}
 
         public async Task<List<Machine>> GetByStatus(status status)
         {
@@ -151,13 +161,13 @@ namespace Laundry_Management.Services
         }
         public async Task<FilterMachine> GetAll(FitlerModel model)
         {
-
+            var total = await _context.Machines.CountAsync();
             var query = _context.Machines.Where(c => (!string.IsNullOrEmpty(model.search)) ? c.MachineName.Contains(model.search) : true);
 
             return new FilterMachine
             {
 
-                TotalCount = await query.CountAsync(),
+                TotalCount = total,
                 ListData = await query.Skip((model.PageIndex - 1) * model.PageSize).Take(model.PageSize)
                 .Select(e => new Machine
                 {

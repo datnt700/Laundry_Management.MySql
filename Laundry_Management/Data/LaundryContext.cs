@@ -54,7 +54,6 @@ namespace Laundry_Management.Data
             {
                 entity.ToTable("machine");
 
-                entity.HasIndex(e => e.LocationId, "fk_machine_location1_idx");
 
                 entity.Property(e => e.MachineId).HasColumnName("machine_id");
 
@@ -66,7 +65,6 @@ namespace Laundry_Management.Data
                     .HasColumnType("bit(10)")
                     .HasColumnName("is_active");
 
-                entity.Property(e => e.LocationId).HasColumnName("location_id");
 
                 entity.Property(e => e.MachineName)
                     .HasMaxLength(250)
