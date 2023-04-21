@@ -54,39 +54,9 @@ const MachineList = () => {
   useEffect(() => {
     getList();
   },[searching, index]);
-  
-  
-  
-    // const getData =  () => {
-    //   try {
-    //     console.log("itemUpdateId: ",itemUpdateId)
-    //     const response = AxiosGet(API.MACHINE_ID,{id:itemUpdateId})
-    //     console.log("machine: ", response);
-    //     setName(response.data.MachineName);
-
-    //     setType(response.data.MachineType);
-    //     setBranch(response.data.Branch);
-    //     setSize(response.data.Size);
-    //     setStatus(response.data.Status);
-    //   } catch (error) {
-    //     console.log("Liste Failed:", error);
-    //   }
-    // };
-   
-  // const handleOpen = (id) => {
-  //   console.log("Id: ",id)
-
-  //   setOpen(!open); 
-  //   setItemUpdateId(id);
-  //   console.log("setItemUpdateId: ",itemUpdateId)
-
-  //   getData()
-  // }
 
    
-
     const showConfirmDeleteHandler = (id) => {
-      console.log("Id: ",id)
       setShowModal(true);
       setItemToDeleteId(id);
     }
@@ -95,7 +65,6 @@ const MachineList = () => {
 
   const confirmDeleteHandler = () => {
     try {
-      console.log("itemToDeleteId: ",itemToDeleteId)
        AxiosDelete(API.DELETE,{data:{id:itemToDeleteId}});
       
       setShowModal(false);
@@ -108,11 +77,6 @@ const MachineList = () => {
       console.log("Delete Failed:", error);
     }
   }
-
-
-
-
-
  
   function hideConfirmDeleteHandler() {
     setShowModal(false);
@@ -126,9 +90,7 @@ const MachineList = () => {
 
   const handlePageClick = async (data) =>{
     let currentPage = data.selected +1;
-    console.log(currentPage);
     setIndex(currentPage);
-    // getList();
   }
   var machines = [];
   var message="";
@@ -154,7 +116,6 @@ const MachineList = () => {
         hideConfirmDeleteHandler={hideConfirmDeleteHandler}
       ></MachineDelete>
      
-      {/* {open.toString()} */}
       <div className="row-machine">
           <div className="col-md-offset-1 col-md-10" >
             <div className="panel">
@@ -196,7 +157,7 @@ const MachineList = () => {
                   <tbody>
                     {api  ? (api.map((item, key) => (
                       <tr key={key} className={item.isComplete ? "done" : ""}>
-                        <td>{key}</td>
+                        <td>{item.MachineId}</td>
                         <td>{item.MachineName}</td>
                         <td>{item.MachineType === 1 ? machineTypes.WashingMachine :
                             item.MachineType === 2 ? machineTypes.Dryer : 'null'}</td>

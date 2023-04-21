@@ -36,31 +36,17 @@ namespace Laundry_Management.Controllers
         }
 
 
-
-      
-
-
         [HttpGet("GetByFilter")]
         public async Task<ResponseResult> GetByFilter([FromQuery] FitlerModel model)
         {
-            //var check = CheckAuthen();
-            //if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
+            var check = CheckAuthen();
+            if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
             var machine = await _machineService.GetAll(model);
             if (machine == null) return new ResponseResult().ResponsFailure(null, "");
             var response = new ResponseResult().ResponseSuccess(machine);
             return response;
         }
 
-        //[HttpGet("search")]
-        //public ResponseResult Search([FromQuery] FitlerModel model)
-        //{
-        //    //var check = CheckAuthen();
-        //    //if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
-        //    var machine = _machineService.Search(model);
-        //    if (machine == null) return null;
-        //    var response = new ResponseResult().ResponseSuccess(machine);
-        //    return response;
-        //}
 
         [HttpGet]
         [Route("GetToken")]
@@ -80,8 +66,8 @@ namespace Laundry_Management.Controllers
         [Route("GetById")]
         public async Task<ResponseResult> GetById(int id)
         {
-            //var check = CheckAuthen();
-            //if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
+            var check = CheckAuthen();
+            if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
             var machine = await _machineService.GetById(id);
             if (machine == null) return new ResponseResult().ResponsFailure(null, "");
             return new ResponseResult().ResponseSuccess(machine);
@@ -97,14 +83,6 @@ namespace Laundry_Management.Controllers
             if (machine == null) return new ResponseResult().ResponsFailure(null, "");
             return new ResponseResult().ResponseSuccess(machine);
         }
-
-        //[HttpGet("{id}")]
-        //public async Task<ResponseResult> GetMachineById(int id)
-        //{
-        //    var machine = await _contextProcedures.sp_GetMachineById.FromSqlRaw("CALL sp_GetMachineById({0})", id).ToListAsync();
-        //    if (machine == null) return new ResponseResult().ResponsFailure(null, "");
-        //    return new ResponseResult().ResponseSuccess(machine);
-        //}
 
         [HttpPost("AddMachine")]
         public async Task<ResponseResult> Add(MachineAddDTO dto)
@@ -139,23 +117,6 @@ namespace Laundry_Management.Controllers
 
         }
 
-        //[HttpGet("GetByName")]
-        //public async Task<Machine?> GetByName(string? machineName)
-        //{
-        //    return await _machineService.GetByName(machineName);
-        //}
-
-        //[HttpGet("GetByLocation")]
-        //public async Task<List<Machine>> GetByLocation(int locationId)
-        //{
-        //    return await _machineService.GetByLocation(locationId);
-        //}
-
-        //[HttpGet("GetByStatus")]
-        //public async Task<List<Machine>> GetByState(status status)
-        //{
-        //    return await _machineService.GetByStatus(status);
-        //}
         public class ApiInputModel
         {
             public status Status { get; set; }
@@ -165,6 +126,6 @@ namespace Laundry_Management.Controllers
         {
             public int Id { get; set; }
         }
-        
+     
     }
 }

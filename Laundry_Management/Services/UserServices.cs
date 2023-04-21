@@ -44,7 +44,7 @@ namespace Laundry_Management.Services
             var user = new User();
             user.PhoneNumber = model.Phone;
             user.UserName = model.UserName;
-            user.Salt = Guid.NewGuid().ToString();// trả về đối tượng string;
+            user.Salt = Guid.NewGuid().ToString();
 
             var passHash = Encrypt.EncodeAccount(model.Password + user.Salt);
             user.PassHash = passHash;
@@ -75,10 +75,7 @@ namespace Laundry_Management.Services
         }
         public async Task<UserAddDTO> Login(LoginModel model)
         {
-            //kiểm tra tài khoản có tồn tại không
-
-            // lấy tài khoản đấy ra
-            //kiểm tra mật khẩu có đúng chưa
+    
             var dbUser = _context.Users.FirstOrDefault(u => u.PhoneNumber == model.Phone);
             if (dbUser == null)
             {
@@ -93,7 +90,6 @@ namespace Laundry_Management.Services
                 {
                     Phone = model.Phone
                 }.GenerateToken(),
-                //JsonConvert.DeserializeObject<UserAddDTO>(Token);
             };
         }
 

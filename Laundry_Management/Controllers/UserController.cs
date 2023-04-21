@@ -41,8 +41,8 @@ namespace Laundry_Management.Controllers
         [HttpGet("GetAll")]
         public async Task<ResponseResult> GetAll([FromQuery] FitlerModel model)
         {
-            // var check = CheckAuthen();
-            //if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
+            var check = CheckAuthen();
+            if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
             var user = await _user.GetAll(model);
             if (model == null) return new ResponseResult().ResponsFailure(null, "");
             var response = new ResponseResult().ResponseSuccess(user);
@@ -55,7 +55,7 @@ namespace Laundry_Management.Controllers
             var check = CheckAuthen();
             if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
 
-           await _user.AddDTO(user);
+            await _user.AddDTO(user);
             if (user == null) return new ResponseResult().ResponsFailure();
             return new ResponseResult().ResponseSuccess(user);
         }

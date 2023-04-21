@@ -4,6 +4,7 @@ using System.Net;
 
 namespace Laundry_Management.Common
 {
+    //template ResponseResult
     public class ResponseResult 
     {
         public int status { get; set; }

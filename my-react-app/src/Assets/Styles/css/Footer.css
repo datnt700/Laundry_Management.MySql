@@ -10,8 +10,9 @@
     width: 100%;
    background-color: #121619; 
     
-    padding: 10px 10px 0px 10px;
-    height: 150px;
+   position: fixed;
+   bottom: 0px;
+   height: 150px;
 
   }
 

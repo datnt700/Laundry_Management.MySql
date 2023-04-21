@@ -54,7 +54,6 @@ namespace Laundry_Management.Controllers
         {
             var check = CheckAuthen();
             if (check == null) { return new ResponseResult().ResponsFailure(null, "User not exist"); }
-
             await _location.addDTO(dto);
             return new ResponseResult().ResponseSuccess(dto);
         }

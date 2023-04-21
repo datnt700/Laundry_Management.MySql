@@ -1,23 +1,14 @@
-import * as React from 'react';
+import React from 'react';
+import { useState } from 'react';
 import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
+import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import styled from 'styled-components';
-import Button from '@mui/material/Button';
-import { BsPlusSquare } from 'react-icons/bs';
+import Modal from '@mui/material/Modal';
+import { BsFillPencilFill } from 'react-icons/bs';
 import '../Users/Userindex.css';
-import { useState } from 'react';
-import { AxiosPost } from '../../util/requestURL';
+import { AxiosPost, AxiosPut } from '../../util/requestURL';
 import API from '../../util/APIConstanst';
-
-const TextButton = styled(Button)`
-  display: block;
-  margin: 20px;
-`;
-
-const Input = styled(TextField)`
-  margin: 10px 20px;
-`;
 
 const style = {
   position: 'absolute',
@@ -31,19 +22,23 @@ const style = {
   p: 4,
 };
 
-export default function UserAdd(props) {
-  const [open, setOpen] = React.useState(false);
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [password, setPassord] = useState('');
+const Input = styled(TextField)`
+  margin: 10px 20px;
+`;
 
+const TextButton = styled(Button)`
+  display: block;
+  margin: 20px;
+`;
+
+export const UserUpdate = (props) => {
+  const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(!open);
-  const handleClose = () => {
-    setOpen(false);
-    setName('');
-    setPhone('');
-    setPassord('');
-  };
+  const handleClose = () => setOpen(false);
+  const [id, setId] = useState(props.id);
+  const [name, setName] = useState(props.name);
+  const [phone, setPhone] = useState(props.phone);
+  const [password, setPassord] = useState(props.password);
 
   const handleName = (e) => {
     setName(e.target.value);
@@ -57,25 +52,33 @@ export default function UserAdd(props) {
     setPassord(e.target.value);
   };
 
-  const addUser = async () => {
-    const postData = {
+  function refreshPage() {
+    console.log('hello');
+    updateUser();
+
+    window.location.reload();
+  }
+
+  const updateUser = async () => {
+    const params = {
+      Id: id,
       UserName: name,
       Phone: phone,
-      Password: password,
     };
     try {
-      const response = await AxiosPost(API.USER_ADD, postData);
-      console.log('Add successfully: ', response);
+      console.log('hello');
+      const response = await AxiosPut(API.USER_UPDATE, params);
+      console.log('Update successfully: ', response);
     } catch (error) {
-      console.log('Add Failed:', error);
+      console.log('Update Failed:', error);
     }
   };
 
   return (
     <>
-      <BsPlusSquare onClick={handleOpen} className="btnAdd">
+      <BsFillPencilFill className="btnupdateUser" onClick={handleOpen}>
         Open modal
-      </BsPlusSquare>
+      </BsFillPencilFill>
       <div>
         <Modal
           open={open}
@@ -84,7 +87,7 @@ export default function UserAdd(props) {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <legend>Add</legend>
+            <legend>Update</legend>
             <Input
               id="outlined-basic"
               label="Name"
@@ -99,20 +102,12 @@ export default function UserAdd(props) {
               value={phone}
               onChange={handlePhone}
             />
-            <Input
-              id="outlined-basic"
-              label="Password"
-              variant="outlined"
-              value={password}
-              onChange={handlePassWord}
-            />
-
-            <TextButton variant="contained" type="button" onClick={addUser}>
-              Add
-            </TextButton>
+            <Button variant="contained" type="button" onClick={refreshPage}>
+              Update
+            </Button>
           </Box>
         </Modal>
       </div>
     </>
   );
-}
+};

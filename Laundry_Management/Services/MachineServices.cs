@@ -111,21 +111,11 @@ namespace Laundry_Management.Services
             if (string.IsNullOrWhiteSpace(machineName)) return null;
 
             var machine = await _context.Machines
-               //.Include(l => l.Location)
                .Where(l => l.MachineName == machineName)
                .FirstOrDefaultAsync();
             return machine;
         }
 
-        //public async Task<List<Machine>> GetByLocation(int locationId)
-        //{
-        //    if (locationId == null) return null;
-
-        //    var machine = await _context.Machines
-        //       .Where(l => l.LocationId == locationId)
-        //       .ToListAsync();
-        //    return machine;
-        //}
 
         public async Task<List<Machine>> GetByStatus(status status)
         {
